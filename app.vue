@@ -42,7 +42,7 @@ const reloadFeed = async () => {
         :key="post.id" 
         :post="post" 
       />
-
+      <AppDock />
     </main>
   </div>
 </template>
