@@ -8,6 +8,7 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const activeTab = ref('global')
 
+// Load the feed data for the signed-in home page.
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
   const { data } = await supabase
     .from('events')

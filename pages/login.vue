@@ -9,6 +9,7 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 
 const redirectIfAuthenticated = async () => {
+  // Leave the login page directly if the user already has an active session.
   const { data } = await supabase.auth.getUser()
 
   if (data.user || user.value) {
@@ -20,6 +21,7 @@ onMounted(() => {
   void redirectIfAuthenticated()
 
   supabase.auth.onAuthStateChange((event, session) => {
+    // Go to the app as soon as Supabase finishes the sign-in process.
     if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
       void navigateTo('/', { replace: true })
     }
@@ -34,6 +36,7 @@ const signInWithGitHub = async () => {
   isLoading.value = true
   errorMessage.value = ''
 
+  // Start the GitHub OAuth flow through Supabase.
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
     options: {
