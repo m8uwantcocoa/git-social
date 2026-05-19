@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  
+
   modules: [
     '@nuxtjs/supabase',
     '@nuxtjs/tailwindcss',
@@ -10,6 +10,9 @@ export default defineNuxtConfig({
   ],
 
   supabase: {
-    redirect: false 
+    redirect: false,
+    cookieOptions: {
+      secure: process.env.NODE_ENV === 'production'
+    }
   }
 })
