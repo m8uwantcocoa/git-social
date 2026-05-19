@@ -2,13 +2,17 @@
 import { ref } from 'vue'
 
 const supabase = useSupabaseClient()
-
+const user = useSupabaseUser()
 const activeTab = ref('global')
 
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
   const { data } = await supabase
     .from('events')
-    .select('*')
+    .select(`
+      *,
+      event_likes (github_username),
+      comments (id, github_username, text, created_at)
+    `)
     .order('created_at', { ascending: false })
   return data
 })
@@ -41,6 +45,7 @@ const reloadFeed = async () => {
         v-for="post in posts" 
         :key="post.id" 
         :post="post" 
+        @refresh="reloadFeed"
       />
       <AppDock />
     </main>
