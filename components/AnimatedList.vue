@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { cn } from "@inspira-ui/plugins";
 import { Motion } from "motion-v";
-import { Comment, computed, useSlots, type VNode } from "vue";
+import { Comment, Fragment, computed, useSlots, type VNode, type VNodeArrayChildren } from "vue";
 
 interface Props {
   class?: string;
@@ -11,9 +11,31 @@ const props = defineProps<Props>();
 
 const slots = useSlots();
 
+const flattenNodes = (nodes: VNodeArrayChildren): VNode[] => {
+  return nodes.flatMap((node) => {
+    if (!node || typeof node === "string" || typeof node === "number" || typeof node === "boolean") {
+      return [];
+    }
+
+    if (Array.isArray(node)) {
+      return flattenNodes(node);
+    }
+
+    if (node.type === Comment) {
+      return [];
+    }
+
+    if (node.type === Fragment) {
+      return flattenNodes((node.children as VNodeArrayChildren) ?? []);
+    }
+
+    return [node];
+  });
+};
+
 // Read the slot on each render so notifications added later still animate.
 const itemsToShow = computed<VNode[]>(() => {
-  return (slots.default?.() ?? []).filter((node) => node.type !== Comment)
+  return flattenNodes(slots.default?.() ?? []);
 });
 </script>
 
