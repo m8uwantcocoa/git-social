@@ -87,11 +87,11 @@ const submitComment = async () => {
     newCommentText.value = ''
     
     addNotification({
-    name: "Ny kommentar",
-    description: "Din kommentar publicerades.",
+    name: "Successfully commented!",
+    description: "Your comment has been posted.",
     icon: "💬",
-    color: "#10b981", // Emerald-färg
-    time: "Nu"
+    color: "#10b981", 
+    time: "Now"
   })
   } else {
     console.error("Fel vid kommentar:", error)

@@ -33,7 +33,7 @@ onMounted(() => {
       { event: 'INSERT', schema: 'public', table: 'comments' },
       (payload) => {
 
-        // så vi kan se under testet vad som fungar
+        // så vi kan se under testet vad som fungar. ta bort // när vi klara, annars blir de dubbel
         // if (payload.new.github_username === currentUsername.value) return;
 
         addNotification({
@@ -45,7 +45,6 @@ onMounted(() => {
         });
       }
     )
-    // ÄNDRING HÄR: Vi kollar om vi ens lyckas prenumerera på kanalen
     .subscribe((status) => {
       console.log("supabase:", status);
     });
@@ -57,15 +56,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-6 right-6 z-[100] flex flex-col gap-4 w-full max-w-[350px] pointer-events-none">
+  <div class="fixed z-[100] flex flex-col gap-4 pointer-events-none w-full px-4 bottom-28 left-0 md:w-full md:max-w-[350px] md:bottom-6 md:right-6 md:left-auto md:px-0">
     <transition-group name="list" tag="div" class="flex flex-col gap-3">
       <Motion
         v-for="data in notifications"
         :key="data.id"
         as="div"
-        :initial="{ scale: 0.8, opacity: 0, x: 50 }"
-        :animate="{ scale: 1, opacity: 1, x: 0 }"
-        :exit="{ scale: 0.8, opacity: 0, x: 50 }"
+        :initial="{ scale: 0.8, opacity: 0, y: 30 }"
+        :animate="{ scale: 1, opacity: 1, y: 0 }"
+        :exit="{ scale: 0.8, opacity: 0, y: -30 }"
         :transition="{ type: 'spring', stiffness: 350, damping: 40 }"
         class="mx-auto w-full pointer-events-auto"
       >
