@@ -5,8 +5,8 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 
-const syncProviderToken = async () => {
-  const { data } = await supabase.auth.getSession()
+const { data: githubData, pending, refresh } = await useAsyncData('github-profile', async () => {
+  const { data: { session } } = await supabase.auth.getSession()
 
   await $fetch('/api/github/session', {
     method: 'POST',

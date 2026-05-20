@@ -1,28 +1,48 @@
 <script setup>
 import { ref } from 'vue'
 
-definePageMeta({
-  middleware: 'auth'
-})
+definePageMeta({ middleware: 'auth' })
 
 const supabase = useSupabaseClient()
+const currentUser = useSupabaseUser()
 const activeTab = ref('global')
 
-// Load the feed data for the signed-in home page.
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
-  const { data } = await supabase
+  if (!currentUser.value) return []
+
+  const { data: follows } = await supabase
+    .from('follows')
+    .select('following_id')
+    .eq('follower_id', currentUser.value.id)
+  
+  const followedIds = follows ? follows.map(f => f.following_id) : []
+  followedIds.push(currentUser.value.id)
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('github_username')
+    .in('id', followedIds)
+
+  const usernamesToTrack = profiles ? profiles.map(p => p.github_username) : []
+
+  if (usernamesToTrack.length === 0) return []
+
+  const { data: feedEvents } = await supabase
     .from('events')
     .select(`
       *,
       event_likes (github_username),
       comments (id, github_username, text, created_at)
     `)
+    .in('github_username', usernamesToTrack) // filter
     .order('created_at', { ascending: false })
+    .limit(50)
 
-  return data
+  return feedEvents
 })
 
 const reloadFeed = async () => {
+  await $fetch('/api/github/sync-events', { method: 'POST' })
   await refresh()
 }
 </script>
