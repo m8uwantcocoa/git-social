@@ -17,14 +17,7 @@ defineEmits(["update:activeTab", "refresh"]);
       <h1 class="text-xl font-extrabold tracking-tight text-white select-none">
         Git<span class="text-lime-400"> - </span>Social
       </h1>
-      <div class="flex-1 max-w-[180px]">
-        <div
-          class="py-1 px-3 text-xs rounded-lg bg-lime-400 text-emerald-950 shadow-sm font-bold text-center"
-        >
-          Followers
-        </div>
-      </div>
-
+      
       <button
         @click="$emit('refresh')"
         class="p-2 bg-emerald-800/40 hover:bg-emerald-800 text-emerald-200 hover:text-white rounded-xl border border-white/5 transition-all group flex-shrink-0"
