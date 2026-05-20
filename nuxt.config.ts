@@ -2,10 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  routeRules: {
-    '/auth/callback': { ssr: false }
-  },
-
+  
   modules: [
     '@nuxtjs/supabase',
     '@nuxtjs/tailwindcss',
@@ -13,9 +10,6 @@ export default defineNuxtConfig({
   ],
 
   supabase: {
-    redirect: false,
-    cookieOptions: {
-      secure: process.env.NODE_ENV === 'production'
-    }
+    redirect: false 
   }
 })

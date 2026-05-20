@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   post: {
@@ -9,10 +9,19 @@ const props = defineProps({
 })
 
 const { addNotification } = useNotifications()
+
 const emit = defineEmits(['refresh'])
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
-const { username: currentUsername } = useGitHubIdentity()
+// const user = useSupabaseUser() 
+const user = ref({
+  user_metadata: {
+    user_name: 'TestDeveloper' // testing purposs
+  }
+})
+
+const currentUsername = computed(() => {
+  return user.value?.user_metadata?.user_name || user.value?.user_metadata?.preferred_username || 'Anonym'
+})
 
 const localLikes = ref(props.post.event_likes || [])
 const localComments = ref(props.post.comments || [])
@@ -22,7 +31,7 @@ const newCommentText = ref('')
 const isSubmittingComment = ref(false)
 
 const isLiked = computed(() => {
-  return localLikes.value.some((like) => like.github_username === currentUsername.value)
+  return localLikes.value.some(like => like.github_username === currentUsername.value)
 })
 
 const latestComment = computed(() => {
@@ -31,10 +40,7 @@ const latestComment = computed(() => {
 })
 
 const toggleLike = async () => {
-  if (!user.value) {
-    alert('You need to sign in to like posts.')
-    return
-  }
+  if (!user.value) return alert('Du måste vara inloggad för att gilla!')
 
   if (isLiked.value) {
     const { error } = await supabase
@@ -44,33 +50,25 @@ const toggleLike = async () => {
       .eq('github_username', currentUsername.value)
 
     if (!error) {
-      localLikes.value = localLikes.value.filter((like) => like.github_username !== currentUsername.value)
+      localLikes.value = localLikes.value.filter(like => like.github_username !== currentUsername.value)
     }
+  } else {
+    const { error } = await supabase
+      .from('event_likes')
+      .insert({
+        event_id: props.post.id,
+        github_username: currentUsername.value
+      })
 
-    return
-  }
-
-  const { error } = await supabase
-    .from('event_likes')
-    .insert({
-      event_id: props.post.id,
-      github_username: currentUsername.value
-    })
-
-  if (!error) {
-    localLikes.value.push({ github_username: currentUsername.value })
+    if (!error) {
+      localLikes.value.push({ github_username: currentUsername.value })
+    }
   }
 }
 
 const submitComment = async () => {
-  if (!newCommentText.value.trim() || isSubmittingComment.value) {
-    return
-  }
-
-  if (!user.value) {
-    alert('You need to sign in to comment.')
-    return
-  }
+  if (!newCommentText.value.trim() || isSubmittingComment.value) return
+  if (!user.value) return alert('Du måste vara inloggad för att kommentera!')
 
   isSubmittingComment.value = true
 
@@ -87,24 +85,25 @@ const submitComment = async () => {
   if (!error && data) {
     localComments.value.push(data[0])
     newCommentText.value = ''
-
+    
     addNotification({
-      name: 'Successfully commented!',
-      description: 'Your comment has been posted.',
-      icon: '💬',
-      color: '#10b981',
-      time: 'Now'
-    })
+    name: "Successfully commented!",
+    description: "Your comment has been posted.",
+    icon: "💬",
+    color: "#10b981", 
+    time: "Now"
+  })
   } else {
-    console.error('Failed to save comment:', error)
+    console.error("Fel vid kommentar:", error)
   }
-
+  
   isSubmittingComment.value = false
 }
 </script>
 
 <template>
   <div class="bg-emerald-950 rounded-3xl p-5 border border-white/5 hover:border-white/10 transition-colors">
+    
     <div class="flex items-center space-x-3 mb-4">
       <img :src="post.avatar_url || 'https://github.com/github.png'" class="w-10 h-10 rounded-full border border-slate-700/50 bg-slate-800 object-cover" alt="Avatar" />
       <div class="flex-1 leading-tight">
@@ -123,7 +122,7 @@ const submitComment = async () => {
         <span class="text-xs font-mono uppercase font-medium tracking-tight">{{ post.event_type }} - </span>
         <span class="text-xs font-mono font-medium tracking-tight">{{ post.repo_name }}</span>
       </div>
-
+      
       <p class="text-slate-200 text-sm leading-relaxed">
         {{ post.message }}
       </p>
@@ -138,7 +137,7 @@ const submitComment = async () => {
         </div>
         <span class="text-xs font-semibold">{{ localLikes.length }}</span>
       </button>
-
+      
       <button @click="showComments = !showComments" :class="['flex items-center space-x-2 transition-colors group', showComments ? 'text-cyan-400' : 'text-slate-400 hover:text-cyan-400']">
         <div :class="['p-1.5 rounded-full transition-colors', showComments ? 'bg-cyan-400/10' : 'group-hover:bg-cyan-400/10']">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,6 +162,7 @@ const submitComment = async () => {
     </div>
 
     <div v-if="showComments" class="space-y-3 mt-3 animate-fade-in">
+      
       <div v-if="localComments.length > 0" class="max-h-48 overflow-y-auto space-y-2.5 pr-1">
         <div v-for="comment in localComments" :key="comment.id" class="bg-black/20 rounded-xl p-2.5 border border-white/5 text-xs">
           <div class="flex justify-between items-center mb-1">
@@ -176,10 +176,10 @@ const submitComment = async () => {
       </div>
 
       <form @submit.prevent="submitComment" class="flex gap-2 mt-2">
-        <input
+        <input 
           v-model="newCommentText"
-          type="text"
-          placeholder="Write a comment..."
+          type="text" 
+          placeholder="Write a comment..." 
           class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
           :disabled="isSubmittingComment"
         />
@@ -191,5 +191,6 @@ const submitComment = async () => {
         />
       </form>
     </div>
+
   </div>
 </template>

@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <NuxtPage />
+  <div> <NuxtPage />
     <ClientOnly>
       <NotificationContainer />
     </ClientOnly>
