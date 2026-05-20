@@ -8,22 +8,30 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const activeTab = ref('global')
 
-// Load the feed data for the signed-in home page.
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
+  const { data: following } = await supabase
+    .from('follows')
+    .select('following_id')
+    .eq('follower_id', currentUser.value.id)
+  
+  const followingIds = following.map(f => f.following_id)
+
   const { data } = await supabase
     .from('events')
     .select(`
       *,
-      event_likes (github_username),
-      comments (id, github_username, text, created_at)
+      profiles!inner(id, github_username)
     `)
+    .in('profiles.id', followingIds) 
     .order('created_at', { ascending: false })
 
   return data
 })
 
 const reloadFeed = async () => {
-  await refresh()
+  await $fetch('/api/sync-events', { method: 'POST' })
+  
+  await refresh() 
 }
 </script>
 

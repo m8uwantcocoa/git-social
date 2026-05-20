@@ -1,4 +1,9 @@
-import { serverSupabaseUser } from '#supabase/server'
+import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
+
+interface GitHubProfileData {
+  profile: any | null
+  repos: any[]
+}
 
 const githubApiHeaders = (token: string) => ({
   Authorization: `Bearer ${token}`,
@@ -6,7 +11,7 @@ const githubApiHeaders = (token: string) => ({
   'X-GitHub-Api-Version': '2022-11-28'
 })
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
   const user = await serverSupabaseUser(event)
 
   if (!user) {
@@ -26,12 +31,11 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // Call GitHub from the server with the OAuth token caught during sign-in.
     const [profile, repos] = await Promise.all([
-      $fetch('https://api.github.com/user', {
+      $fetch<any>('https://api.github.com/user', {
         headers: githubApiHeaders(providerToken)
       }),
-      $fetch('https://api.github.com/user/repos', {
+      $fetch<any>('https://api.github.com/user/repos', {
         headers: githubApiHeaders(providerToken),
         query: {
           sort: 'updated',
@@ -40,16 +44,36 @@ export default defineEventHandler(async (event) => {
       })
     ])
 
+    const supabase = await serverSupabaseClient(event)
+
+    const { error: dbError } = await supabase
+  .from('profiles')
+  .upsert({
+    id: user.id,
+    github_username: profile.login,
+    full_name: profile.name || profile.login,
+    email: profile.email,
+    avatar_url: profile.avatar_url,
+    public_repos: profile.public_repos,
+    total_private_repos: profile.total_private_repos || 0,
+    updated_at: new Date().toISOString()
+  } as any, { onConflict: 'id' })
+
+    if (dbError) {
+      console.error('Kunde inte spara profil till databasen:', dbError.message)
+    }
+
     return {
       profile,
       repos
     }
+    
   } catch (error: any) {
     const statusCode = error?.response?.status || 500
 
     throw createError({
       statusCode,
-      statusMessage: 'Failed to fetch GitHub data'
+      statusMessage: 'Failed to fetch or sync GitHub data'
     })
   }
 })

@@ -17,5 +17,8 @@ export default defineNuxtConfig({
     cookieOptions: {
       secure: process.env.NODE_ENV === 'production'
     }
+  },
+  runtimeConfig: {
+    githubToken: process.env.GITHUB_TOKEN, // Hämtar från .env
   }
 })
