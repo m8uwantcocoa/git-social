@@ -1,11 +1,20 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 definePageMeta({ middleware: 'auth' })
 
 const supabase = useSupabaseClient()
 const currentUser = useSupabaseUser()
 const activeTab = ref('global')
+
+const showConfetti = ref(false)
+
+onMounted(() => {
+  if (localStorage.getItem('show_welcome_confetti')) {
+    showConfetti.value = true
+    localStorage.removeItem('show_welcome_confetti')
+  }
+})
 
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
   if (!currentUser.value) return []
@@ -78,6 +87,12 @@ const reloadFeed = async () => {
 
 <template>
   <div class="min-h-screen bg-mist-100 text-slate-100 font-sans pb-24 selection:bg-emerald-500/30">
+    <Confetti 
+      v-if="showConfetti" 
+      class="fixed inset-0 z-[100] pointer-events-none w-full h-full"
+      :options="{ particleCount: 150, spread: 90 }"
+    />
+
     <AppHeader
       v-model:activeTab="activeTab"
       @refresh="reloadFeed"

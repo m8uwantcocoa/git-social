@@ -15,6 +15,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.3",
     "@supabase/supabase-js": "^2.105.4",
+    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "motion-v": "^2.2.1",
     "nuxt": "^4.4.5",
@@ -22,5 +23,8 @@
     "tailwind-merge": "^3.6.0",
     "vue": "^3.5.34",
     "vue-router": "^5.0.6"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0"
   }
 }

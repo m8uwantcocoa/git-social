@@ -5,6 +5,7 @@ const errorMessage = ref('')
 let hasSynced = false
 
 const redirectToApp = () => {
+  localStorage.setItem('show_welcome_confetti', 'true')
   window.location.replace('/')
 }
 
