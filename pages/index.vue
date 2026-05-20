@@ -55,8 +55,8 @@ const reloadFeed = async () => {
           
         </main>
 
-        <aside class="hidden lg:block lg:col-span-3">
-          <ExploreLiveWidget />
+        <aside class="hidden lg:block lg:col-span-3 sticky top-[80px] h-fit">
+            <ExploreLiveWidget />
         </aside>
 
       </div>
