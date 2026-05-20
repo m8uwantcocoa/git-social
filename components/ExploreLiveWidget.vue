@@ -16,6 +16,17 @@ const locationData = ref({
 
 const fetchWeatherFromApi = async (lat: number, lon: number) => {
   try {
+    const cacheKey = `weather_${lat.toFixed(2)}_${lon.toFixed(2)}`
+    const cachedStr = localStorage.getItem(cacheKey)
+    
+    if (cachedStr) {
+      const cached = JSON.parse(cachedStr)
+      if (Date.now() - cached.timestamp < 3600000) { // 1 timme i millisekunder
+        locationData.value = cached.data
+        return
+      }
+    }
+
     const data = await $fetch(`/api/weather/weather?lat=${lat}&lon=${lon}`)
     
     if (data.error) {
@@ -28,6 +39,11 @@ const fetchWeatherFromApi = async (lat: number, lon: number) => {
       condition: data.condition,
       temp: data.temp
     }
+
+    localStorage.setItem(cacheKey, JSON.stringify({
+      timestamp: Date.now(),
+      data: locationData.value
+    }))
   } catch (err) {
     locationData.value.condition = 'Could not fetch'
   }

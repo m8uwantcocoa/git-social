@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -39,9 +39,29 @@ const { data: posts, refresh } = await useAsyncData('posts', async () => {
     .limit(50)
 
   return feedEvents
+}, {
+  getCachedData(key) {
+    const nuxtApp = useNuxtApp()
+    if (import.meta.client) {
+      const cached = localStorage.getItem('feed_cache')
+      if (cached) return JSON.parse(cached)
+    }
+    return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+  }
+})
+
+if (import.meta.client) {
+  watch(posts, (newVal) => {
+    if (newVal) {
+      localStorage.setItem('feed_cache', JSON.stringify(newVal))
+    }
+  }, { deep: true })
 })
 
 const reloadFeed = async () => {
+  if (import.meta.client) {
+    localStorage.removeItem('feed_cache')
+  }
   await $fetch('/api/github/sync-events', { method: 'POST' })
   await refresh()
 }
