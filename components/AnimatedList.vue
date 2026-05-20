@@ -1,52 +1,20 @@
 <script lang="ts" setup>
 import { cn } from "@inspira-ui/plugins";
 import { Motion } from "motion-v";
-import { computed, onMounted, ref, useSlots } from "vue";
+import { Comment, computed, useSlots, type VNode } from "vue";
 
 interface Props {
   class?: string;
-  delay?: number;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  delay: 1000,
-});
+const props = defineProps<Props>();
 
 const slots = useSlots();
-const displayedItems = ref<{ node: unknown; id: string }[]>([]);
-const nextIndex = ref(0);
 
-onMounted(startLoop);
-
-async function startLoop() {
-  const notifications = slots.default ? (slots.default()[0].children ?? []) : [];
-  if (!notifications.length) return;
-
-  while (displayedItems.value.length < notifications.length) {
-    displayedItems.value.push({
-      node: notifications[nextIndex.value],
-      id: `${nextIndex.value}-${Date.now()}`,
-    });
-    nextIndex.value = (nextIndex.value + 1) % notifications.length;
-    await wait(props.delay);
-  }
-
-  while (true) {
-    displayedItems.value.shift();
-    displayedItems.value.push({
-      node: notifications[nextIndex.value],
-      id: `${nextIndex.value}-${Date.now()}`,
-    });
-    nextIndex.value = (nextIndex.value + 1) % notifications.length;
-    await wait(props.delay);
-  }
-}
-
-const itemsToShow = computed(() => displayedItems.value);
-
-async function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// Read the slot on each render so notifications added later still animate.
+const itemsToShow = computed<VNode[]>(() => {
+  return (slots.default?.() ?? []).filter((node) => node.type !== Comment)
+});
 </script>
 
 <template>
@@ -57,10 +25,9 @@ async function wait(ms: number) {
       class="flex flex-col-reverse items-center gap-3"
       move-class="move"
     >
-      <!-- Only render the items up to the current index -->
       <Motion
-        v-for="data in itemsToShow"
-        :key="data.id"
+        v-for="(node, index) in itemsToShow"
+        :key="node.key ?? `animated-item-${index}`"
         as="div"
         :initial="{ scale: 0, opacity: 0 }"
         :animate="{
@@ -80,7 +47,7 @@ async function wait(ms: number) {
         }"
         class="mx-auto w-full"
       >
-        <component :is="data.node" />
+        <component :is="node.type" v-bind="node.props ?? {}" />
       </Motion>
     </transition-group>
   </div>
