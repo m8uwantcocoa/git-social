@@ -19,11 +19,15 @@ export default defineEventHandler(async (event) => {
 
   const syncPromises = profiles.map(async (profile) => {
     try {
+      const headers: Record<string, string> = {
+        'Accept': 'application/vnd.github+json'
+      }
+      if (process.env.GITHUB_TOKEN) {
+        headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
+      }
+
       const githubEvents = await $fetch<any[]>(`https://api.github.com/users/${profile.github_username}/events`, {
-        headers: { 
-            'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
-            'Accept': 'application/vnd.github+json' 
-            }
+        headers
       })
 
       const eventsToSave = githubEvents.map(e => ({
@@ -37,7 +41,10 @@ export default defineEventHandler(async (event) => {
       }))
 
       if (eventsToSave.length > 0) {
-        await supabase.from('events').upsert(eventsToSave, { onConflict: 'github_event_id' })
+        const { error: upsertError } = await supabase.from('events').upsert(eventsToSave, { onConflict: 'github_event_id' })
+        if (upsertError) {
+          console.error(`Kunde inte spara events för ${profile.github_username} i databasen:`, upsertError.message)
+        }
       }
     } catch (err) {
       console.error(`Fel vid synk av ${profile.github_username}:`, err)

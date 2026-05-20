@@ -107,7 +107,5 @@ const reloadFeed = async () => {
     </div>
     
     <AppDock />
-
-    <AppDock />
   </div>
 </template>
