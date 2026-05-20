@@ -32,6 +32,11 @@ const isLiked = computed(() => {
   return localLikes.value.some(like => like.github_username === currentUsername.value)
 })
 
+const latestComment = computed(() => {
+  if (localComments.value.length === 0) return null
+  return localComments.value[localComments.value.length - 1]
+})
+
 const toggleLike = async () => {
   if (!user.value) return alert('Du måste vara inloggad för att gilla!')
 
@@ -135,6 +140,17 @@ const submitComment = async () => {
       </button>
     </div>
 
+    <div v-if="!showComments && latestComment" class="animate-fade-in mt-1">
+      <span class="text-xs text-emerald-500 mb-1 block">Latest comment:</span>
+      <div class="bg-black/10 rounded-xl p-2.5 border border-white/5 text-xs flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+        <span class="font-semibold text-emerald-400 shrink-0">{{ latestComment.github_username }}</span>
+        <span class="text-slate-300 truncate">{{ latestComment.text }}</span>
+      </div>
+      <button v-if="localComments.length > 1" @click="showComments = true" class="text-[11px] text-slate-500 hover:text-slate-400 mb-2 font-medium transition-colors">
+        Show all {{ localComments.length }} comments...
+      </button>
+    </div>
+
     <div v-if="showComments" class="space-y-3 mt-3 animate-fade-in">
       
       <div v-if="localComments.length > 0" class="max-h-48 overflow-y-auto space-y-2.5 pr-1">
@@ -153,16 +169,16 @@ const submitComment = async () => {
         <input 
           v-model="newCommentText"
           type="text" 
-          placeholder="Write a comment... (press Enter to send)" 
+          placeholder="Write a comment..." 
           class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
           :disabled="isSubmittingComment"
         />
         <InteractiveSendButton
-  type="submit"
-  :text="isSubmittingComment ? 'Sending...' : 'Send'"
-  :disabled="!newCommentText.trim() || isSubmittingComment"
-  class="bg-emerald-600 hover:bg-emerald-500 border-white/10 text-white font-semibold text-xs rounded-xl focus:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-/>
+          type="submit"
+          :text="isSubmittingComment ? 'Sending...' : 'Send'"
+          :disabled="!newCommentText.trim() || isSubmittingComment"
+          class="bg-emerald-600 hover:bg-emerald-500 border-white/10 text-white font-semibold text-xs rounded-xl focus:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        />
       </form>
     </div>
 
