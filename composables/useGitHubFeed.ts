@@ -1,14 +1,16 @@
 interface GithubEvent {
-  id: string
-  type: string
-  actor: { display_login: string }
-  repo: { name: string }
+  id?: string
+  github_event_id: string
+  event_type: string
+  github_username: string
+  avatar_url: string
   created_at: string
+  repo_name: string
   payload: any
 }
 
 export const useGithubFeed = () => {
-  const feed = ref([])
+  const feed = ref<GithubEvent[]>([])
   const isRefreshing = ref(false)
 
   const loadFeed = async (username: string) => {
@@ -21,8 +23,7 @@ export const useGithubFeed = () => {
   }
 
   const refreshFeed = async (username: string) => {
-    const feed = ref<GithubEvent[]>([]) 
-    const isRefreshing = ref(false)
+    isRefreshing.value = true
     try {
       const data = await $fetch<GithubEvent[]>(`/api/github/events?username=${username}`)
       

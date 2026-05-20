@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
 
       const eventsToSave = githubEvents.map(e => ({
         github_event_id: e.id,
-        type: e.type,
+        event_type: e.type,
         github_username: e.actor.login,
         avatar_url: e.actor.avatar_url,
         created_at: e.created_at,

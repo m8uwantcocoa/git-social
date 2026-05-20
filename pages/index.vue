@@ -10,36 +10,45 @@ const activeTab = ref('global')
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
   if (!currentUser.value) return []
 
-  const { data: follows } = await supabase
-    .from('follows')
-    .select('following_id')
-    .eq('follower_id', currentUser.value.id)
-  
-  const followedIds = follows ? follows.map(f => f.following_id) : []
-  followedIds.push(currentUser.value.id)
+  let usernamesToTrack = []
 
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('github_username')
-    .in('id', followedIds)
+  if (activeTab.value === 'following') {
+    const { data: follows } = await supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', currentUser.value.id)
+    
+    const followedIds = follows ? follows.map(f => f.following_id) : []
+    followedIds.push(currentUser.value.id)
 
-  const usernamesToTrack = profiles ? profiles.map(p => p.github_username) : []
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('github_username')
+      .in('id', followedIds)
 
-  if (usernamesToTrack.length === 0) return []
+    usernamesToTrack = profiles ? profiles.map(p => p.github_username).filter(Boolean) : []
+    
+    if (usernamesToTrack.length === 0) return []
+  }
 
-  const { data: feedEvents } = await supabase
+  let query = supabase
     .from('events')
     .select(`
       *,
       event_likes (github_username),
       comments (id, github_username, text, created_at)
     `)
-    .in('github_username', usernamesToTrack) // filter
     .order('created_at', { ascending: false })
     .limit(50)
 
-  return feedEvents
+  if (activeTab.value === 'following') {
+    query = query.in('github_username', usernamesToTrack)
+  }
+
+  const { data: feedEvents } = await query
+  return feedEvents || []
 }, {
+  watch: [activeTab],
   getCachedData(key) {
     const nuxtApp = useNuxtApp()
     if (import.meta.client) {

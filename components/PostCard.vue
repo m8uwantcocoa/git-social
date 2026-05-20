@@ -31,7 +31,7 @@ const latestComment = computed(() => {
 })
 
 const generatedMessage = computed(() => {
-  const type = props.post.type
+  const type = props.post.event_type
   const payload = props.post.payload
 
   if (type === 'PushEvent') {
@@ -149,7 +149,7 @@ const submitComment = async () => {
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <span class="text-xs font-mono uppercase font-medium tracking-tight">{{ post.type }} - </span>
+        <span class="text-xs font-mono uppercase font-medium tracking-tight">{{ post.event_type }} - </span>
         <span class="text-xs font-mono font-medium tracking-tight">{{ post.repo_name }}</span>
       </div>
 
