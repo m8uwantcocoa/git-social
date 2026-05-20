@@ -32,20 +32,36 @@ const latestComment = computed(() => {
 
 const generatedMessage = computed(() => {
   const type = props.post.event_type
-  const payload = props.post.payload
+  let payload = props.post.payload
+
+  if (typeof payload === 'string') {
+    try { payload = JSON.parse(payload) } catch {}
+  }
 
   if (type === 'PushEvent') {
-    const commitsCount = payload?.size || payload?.commits?.length || 0
-    return `Pushed ${commitsCount} commit${commitsCount !== 1 ? 's' : ''}`
+    const commits = payload?.commits || []
+    const commitsCount = payload?.size || commits.length || 0
+    let msg = `Pushed ${commitsCount} commit${commitsCount !== 1 ? 's' : ''}`
+    
+    if (commits.length > 0) {
+      msg += `:\n"${commits[0].message}"`
+    }
+    return msg
   } else if (type === 'CreateEvent') {
     const refType = payload?.ref_type || 'repository'
     return `Created a new ${refType}`
   } else if (type === 'IssuesEvent') {
     const action = payload?.action || 'opened'
-    return `${action.charAt(0).toUpperCase() + action.slice(1)} an issue`
+    const title = payload?.issue?.title
+    let msg = `${action.charAt(0).toUpperCase() + action.slice(1)} an issue`
+    if (title) msg += `:\n"${title}"`
+    return msg
   } else if (type === 'PullRequestEvent') {
     const action = payload?.action || 'opened'
-    return `${action.charAt(0).toUpperCase() + action.slice(1)} a pull request`
+    const title = payload?.pull_request?.title
+    let msg = `${action.charAt(0).toUpperCase() + action.slice(1)} a pull request`
+    if (title) msg += `:\n"${title}"`
+    return msg
   } else if (type === 'WatchEvent') {
     return `Starred the repository`
   } else if (type === 'ForkEvent') {
@@ -153,7 +169,7 @@ const submitComment = async () => {
         <span class="text-xs font-mono font-medium tracking-tight">{{ post.repo_name }}</span>
       </div>
 
-      <p class="text-slate-200 text-sm leading-relaxed">
+      <p class="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">
         {{ post.message || generatedMessage }}
       </p>
     </div>
