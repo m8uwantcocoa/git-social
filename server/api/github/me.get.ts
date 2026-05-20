@@ -87,7 +87,7 @@ export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
     if (dbError) {
       console.error('Kunde inte spara profil till databasen:', dbError.message)
     } else {
-      console.log(`✅ Profilen för ${profile.login} sparades framgångsrikt!`)
+      console.log(`Profilen för ${profile.login} sparades framgångsrikt!`)
     }
 
     return {
