@@ -8,6 +8,8 @@ const props = defineProps({
   }
 })
 
+const { addNotification } = useNotifications()
+
 const emit = defineEmits(['refresh'])
 const supabase = useSupabaseClient()
 // const user = useSupabaseUser() 
@@ -83,6 +85,14 @@ const submitComment = async () => {
   if (!error && data) {
     localComments.value.push(data[0])
     newCommentText.value = ''
+    
+    addNotification({
+    name: "Ny kommentar",
+    description: "Din kommentar publicerades.",
+    icon: "💬",
+    color: "#10b981", // Emerald-färg
+    time: "Nu"
+  })
   } else {
     console.error("Fel vid kommentar:", error)
   }

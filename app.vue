@@ -1,3 +1,7 @@
 <template>
-  <NuxtPage />
+  <div> <NuxtPage />
+    <ClientOnly>
+      <NotificationContainer />
+    </ClientOnly>
+  </div>
 </template>
