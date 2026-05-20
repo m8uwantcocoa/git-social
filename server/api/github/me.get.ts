@@ -1,4 +1,5 @@
 import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 interface GitHubProfileData {
   profile: any | null
@@ -12,12 +13,38 @@ const githubApiHeaders = (token: string) => ({
 })
 
 export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
-  const user = await serverSupabaseUser(event)
+  let user = await serverSupabaseUser(event)
+  let supabase = await serverSupabaseClient(event)
 
-  if (!user) {
+  if (!user || !user.id) {
+    const authHeader = getHeader(event, 'Authorization')
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1]
+      const config = useRuntimeConfig()
+
+      const fallbackClient = createClient(
+        config.public.supabase.url,
+        config.public.supabase.key,
+        {
+          global: {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        }
+      )
+
+      const { data } = await fallbackClient.auth.getUser()
+      if (data?.user) {
+        user = data.user
+        supabase = fallbackClient
+      }
+    }
+  }
+
+  if (!user || !user.id) {
+    console.error('AVBRYTER: Sessionen saknar ett giltigt användar-ID just nu.')
     throw createError({
       statusCode: 401,
-      statusMessage: 'Unauthorized'
+      statusMessage: 'Unauthorized - Missing User ID'
     })
   }
 
@@ -44,23 +71,23 @@ export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
       })
     ])
 
-    const supabase = await serverSupabaseClient(event)
-
     const { error: dbError } = await supabase
-  .from('profiles')
-  .upsert({
-    id: user.id,
-    github_username: profile.login,
-    full_name: profile.name || profile.login,
-    email: profile.email,
-    avatar_url: profile.avatar_url,
-    public_repos: profile.public_repos,
-    total_private_repos: profile.total_private_repos || 0,
-    updated_at: new Date().toISOString()
-  } as any, { onConflict: 'id' })
+      .from('profiles')
+      .upsert({
+        id: user.id, 
+        github_username: profile.login,
+        full_name: profile.name || profile.login,
+        email: profile.email,
+        avatar_url: profile.avatar_url,
+        public_repos: profile.public_repos,
+        total_private_repos: profile.total_private_repos || 0,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' })
 
     if (dbError) {
       console.error('Kunde inte spara profil till databasen:', dbError.message)
+    } else {
+      console.log(`✅ Profilen för ${profile.login} sparades framgångsrikt!`)
     }
 
     return {

@@ -30,6 +30,35 @@ const latestComment = computed(() => {
   return localComments.value[localComments.value.length - 1]
 })
 
+const generatedMessage = computed(() => {
+  const type = props.post.type
+  const payload = props.post.payload
+
+  if (type === 'PushEvent') {
+    const commitsCount = payload?.size || payload?.commits?.length || 0
+    return `Pushed ${commitsCount} commit${commitsCount !== 1 ? 's' : ''}`
+  } else if (type === 'CreateEvent') {
+    const refType = payload?.ref_type || 'repository'
+    return `Created a new ${refType}`
+  } else if (type === 'IssuesEvent') {
+    const action = payload?.action || 'opened'
+    return `${action.charAt(0).toUpperCase() + action.slice(1)} an issue`
+  } else if (type === 'PullRequestEvent') {
+    const action = payload?.action || 'opened'
+    return `${action.charAt(0).toUpperCase() + action.slice(1)} a pull request`
+  } else if (type === 'WatchEvent') {
+    return `Starred the repository`
+  } else if (type === 'ForkEvent') {
+    return `Forked the repository`
+  } else if (type === 'IssueCommentEvent') {
+    return `Commented on an issue`
+  } else if (type === 'DeleteEvent') {
+    return `Deleted a ${payload?.ref_type || 'branch'}`
+  }
+  
+  return `Interacted with the repository`
+})
+
 const toggleLike = async () => {
   if (!user.value) {
     alert('You need to sign in to like posts.')
@@ -120,12 +149,12 @@ const submitComment = async () => {
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <span class="text-xs font-mono uppercase font-medium tracking-tight">{{ post.event_type }} - </span>
+        <span class="text-xs font-mono uppercase font-medium tracking-tight">{{ post.type }} - </span>
         <span class="text-xs font-mono font-medium tracking-tight">{{ post.repo_name }}</span>
       </div>
 
       <p class="text-slate-200 text-sm leading-relaxed">
-        {{ post.message }}
+        {{ post.message || generatedMessage }}
       </p>
     </div>
 

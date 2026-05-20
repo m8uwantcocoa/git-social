@@ -5,30 +5,24 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 
-const syncProviderToken = async () => {
-  const { data } = await supabase.auth.getSession()
+const { data: githubData, pending, refresh } = await useAsyncData('github-profile', async () => {
+  const { data: { session } } = await supabase.auth.getSession()
 
-  // Refresh the stored GitHub provider token before loading account data.
-  await $fetch('/api/github/session', {
-    method: 'POST',
-    body: {
-      providerToken: data.session?.provider_token || null
-    }
-  })
-}
+  if (session?.provider_token) {
+    await $fetch('/api/github/session', {
+      method: 'POST',
+      body: { providerToken: session.provider_token }
+    })
+  }
 
-await syncProviderToken()
+  const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
 
-// Load GitHub profile details from the server API route, which provides the data from the provider token stored in the session.
-const { data: githubData, pending, refresh } = await useFetch('/api/github/me', {
-  default: () => ({
-    profile: null,
-    repos: []
-  })
+  return await $fetch('/api/github/me', { headers })
+}, {
+  default: () => ({ profile: null, repos: [] })
 })
 
 const refreshProfile = async () => {
-  await syncProviderToken()
   await refresh()
 }
 </script>

@@ -1,37 +1,49 @@
 <script setup>
 import { ref } from 'vue'
 
-definePageMeta({
-  middleware: 'auth'
-})
+definePageMeta({ middleware: 'auth' })
 
 const supabase = useSupabaseClient()
+const currentUser = useSupabaseUser()
 const activeTab = ref('global')
 
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
-  const { data: following } = await supabase
+  if (!currentUser.value) return []
+
+  const { data: follows } = await supabase
     .from('follows')
     .select('following_id')
     .eq('follower_id', currentUser.value.id)
   
-  const followingIds = following.map(f => f.following_id)
+  const followedIds = follows ? follows.map(f => f.following_id) : []
+  followedIds.push(currentUser.value.id)
 
-  const { data } = await supabase
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('github_username')
+    .in('id', followedIds)
+
+  const usernamesToTrack = profiles ? profiles.map(p => p.github_username) : []
+
+  if (usernamesToTrack.length === 0) return []
+
+  const { data: feedEvents } = await supabase
     .from('events')
     .select(`
       *,
-      profiles!inner(id, github_username)
+      event_likes (github_username),
+      comments (id, github_username, text, created_at)
     `)
-    .in('profiles.id', followingIds) 
+    .in('github_username', usernamesToTrack) // filter
     .order('created_at', { ascending: false })
+    .limit(50)
 
-  return data
+  return feedEvents
 })
 
 const reloadFeed = async () => {
-  await $fetch('/api/sync-events', { method: 'POST' })
-  
-  await refresh() 
+  await $fetch('/api/github/sync-events', { method: 'POST' })
+  await refresh()
 }
 </script>
 

@@ -16,7 +16,7 @@ const locationData = ref({
 
 const fetchWeatherFromApi = async (lat: number, lon: number) => {
   try {
-    const data = await $fetch(`/api/weather?lat=${lat}&lon=${lon}`)
+    const data = await $fetch(`server/api/weather?lat=${lat}&lon=${lon}`)
     
     if (data.error) {
       locationData.value.condition = 'Could not fetch'
@@ -71,6 +71,7 @@ const fetchMyFollows = async () => {
   if (data) {
     followingSet.value = new Set(data.map(f => f.following_id))
   }
+  await fetchLatestActivity()
 }
 
 const handleSearch = () => {
@@ -87,8 +88,7 @@ const handleSearch = () => {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, github_username, full_name, avatar_url')
-      .ilike('github_username', `%${searchQuery.value}%`) 
-      .neq('id', currentUser.value?.id) 
+      .or(`github_username.ilike.%${searchQuery.value}%,full_name.ilike.%${searchQuery.value}%`)
       .limit(5)
 
     if (!error && data) {
@@ -112,6 +112,7 @@ const toggleFollow = async (targetId: string) => {
       method: 'POST',
       body: { targetUserId: targetId }
     })
+    await fetchLatestActivity()
   } catch (err) {
     console.error('Failed to toggle follow status:', err)
     if (isFollowing) {
@@ -137,12 +138,72 @@ onMounted(() => {
 
 onUnmounted(() => clearInterval(timer))
 
-const latestActivity = ref([
-  { id: 1, type: 'post', user: 'Alex-Aug', description: 'pushade 3 commits till', target: 'git-social', time: '2m' },
-  { id: 2, type: 'mention', user: 'TestBot', description: 'pingade', target: '@DeployBot', time: '14m', isMention: true },
-  { id: 3, type: 'follow', user: 'AmerAlzor', description: 'följde', target: 'Linus Torvalds', time: '1h' },
-  { id: 4, type: 'comment', user: 'm8uwantcocoa', description: 'kommenterade hos', target: '@AmerAlzor', time: '1h' },
-])
+const latestActivity = ref<any[]>([])
+
+const getEventDescription = (event: any) => {
+  const type = event.type
+  const payload = event.payload || {}
+
+  if (type === 'PushEvent') {
+    const commitsCount = payload.size || payload.commits?.length || 0
+    return `pushed ${commitsCount} commit${commitsCount !== 1 ? 's' : ''} to`
+  } else if (type === 'CreateEvent') {
+    return `created a new ${payload.ref_type || 'repository'}`
+  } else if (type === 'WatchEvent') {
+    return `starred`
+  } else if (type === 'ForkEvent') {
+    return `forked`
+  } else if (type === 'IssuesEvent') {
+    return `${payload.action || 'opened'} an issue in`
+  } else if (type === 'PullRequestEvent') {
+    return `${payload.action || 'opened'} a pull request in`
+  } else if (type === 'IssueCommentEvent') {
+    return `commented on an issue in`
+  } else if (type === 'DeleteEvent') {
+    return `deleted a ${payload.ref_type || 'branch'} in`
+  }
+  return `interacted with`
+}
+
+const formatTimeAgo = (dateString: string) => {
+  const diff = new Date().getTime() - new Date(dateString).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins || 1}m`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  return `${Math.floor(hours / 24)}d`
+}
+
+const fetchLatestActivity = async () => {
+  if (!currentUser.value) return
+  const followedIds = Array.from(followingSet.value)
+  if (followedIds.length === 0) {
+    latestActivity.value = []
+    return
+  }
+
+  const { data: profiles } = await supabase.from('profiles').select('github_username').in('id', followedIds)
+  const usernamesToTrack = profiles ? profiles.map(p => p.github_username) : []
+  
+  if (usernamesToTrack.length === 0) {
+    latestActivity.value = []
+    return
+  }
+
+  const { data: events } = await supabase.from('events').select('*').in('github_username', usernamesToTrack).order('created_at', { ascending: false }).limit(4)
+
+  if (events) {
+    latestActivity.value = events.map(e => ({
+      id: e.id,
+      type: 'post',
+      user: e.github_username,
+      description: getEventDescription(e),
+      target: e.repo_name,
+      time: formatTimeAgo(e.created_at),
+      isMention: false
+    }))
+  }
+}
 </script>
 
 <template>
@@ -211,6 +272,9 @@ const latestActivity = ref([
     <div class="bg-slate-50 rounded-2xl flex flex-col pt-3 overflow-hidden">
       <h2 class="font-extrabold text-slate-900 text-xl px-4 pb-3">Latest Activity</h2>
       <div class="flex flex-col">
+        <div v-if="latestActivity.length === 0" class="px-4 py-4 text-sm text-slate-500 text-center">
+          Follow developers to see their activity here.
+        </div>
         <div v-for="event in latestActivity" :key="event.id" class="px-4 py-3 hover:bg-slate-100 transition-colors cursor-pointer flex flex-col gap-1">
           <div class="flex items-center gap-2 text-[13px] text-slate-500">
              <svg v-if="event.type === 'mention'" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
@@ -226,9 +290,7 @@ const latestActivity = ref([
             </span>
           </div>
         </div>
-        <button class="px-4 py-4 text-[15px] text-emerald-600 hover:bg-slate-100 transition-colors text-left w-full">
-          Show more
-        </button>
+        
       </div>
     </div>
 

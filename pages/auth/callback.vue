@@ -2,60 +2,61 @@
 const supabase = useSupabaseClient()
 const status = ref('Finishing sign-in...')
 const errorMessage = ref('')
+let hasSynced = false
 
 const redirectToApp = () => {
-  // Use a full browser redirect so the callback page cannot get stuck in SPA state.
   window.location.replace('/')
 }
 
-const syncGitHubToken = async (providerToken: string | null | undefined) => {
+const syncGitHubToken = async (session: any) => {
+  if (hasSynced) return
+  hasSynced = true
+
   try {
+    const providerToken = session?.provider_token
+    const accessToken = session?.access_token
+
+    // Spara GitHub-token
     await $fetch('/api/github/session', {
       method: 'POST',
-      body: {
-        providerToken: providerToken || null
-      }
+      body: { providerToken: providerToken || null }
     })
+    
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    // Synka profilen 
+    if (accessToken) {
+      await $fetch('/api/github/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}` 
+        }
+      })
+    }
+    
   } catch (error) {
-    console.error('Failed to store GitHub provider token', error)
+    console.error('Failed to store session or sync profile', error)
   }
 }
 
 onMounted(() => {
   const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
-    // Redirect as soon as Supabase reveals a signed-in session.
     if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
-      await syncGitHubToken(session.provider_token)
+      await syncGitHubToken(session) 
       authListener.data.subscription.unsubscribe()
       redirectToApp()
     }
   })
 
-  const intervalId = window.setInterval(async () => {
-    // Some browsers finish the session silently, so poll for the user and leave once it exists.
-    const { data } = await supabase.auth.getUser()
-
-    if (data.user) {
-      const { data: sessionData } = await supabase.auth.getSession()
-      await syncGitHubToken(sessionData.session?.provider_token)
-      window.clearInterval(intervalId)
-      authListener.data.subscription.unsubscribe()
-      redirectToApp()
-    }
-  }, 800)
-
   void supabase.auth.getSession().then(async ({ data, error }) => {
     if (error) {
       errorMessage.value = error.message
       status.value = 'Sign-in failed.'
-      window.clearInterval(intervalId)
       authListener.data.subscription.unsubscribe()
       return
     }
 
     if (data.session?.user) {
-      await syncGitHubToken(data.session.provider_token)
-      window.clearInterval(intervalId)
+      await syncGitHubToken(data.session) 
       authListener.data.subscription.unsubscribe()
       redirectToApp()
       return

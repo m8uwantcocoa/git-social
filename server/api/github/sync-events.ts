@@ -10,7 +10,6 @@ interface GitHubEvent {
 export default defineEventHandler(async (event) => {
   const supabase = await serverSupabaseClient(event)
 
-  // 1. Hämta alla användare med GitHub-användarnamn
   const { data: profiles, error: profileError } = await supabase
     .from('profiles')
     .select('github_username')
@@ -18,22 +17,23 @@ export default defineEventHandler(async (event) => {
 
   if (profileError || !profiles) return { success: false, error: 'Kunde inte hämta profiler' }
 
-  // 2. Loopa och hämta events (använd Promise.all för snabbhet)
   const syncPromises = profiles.map(async (profile) => {
     try {
       const githubEvents = await $fetch<any[]>(`https://api.github.com/users/${profile.github_username}/events`, {
-        headers: { 'Accept': 'application/vnd.github+json' }
+        headers: { 
+            'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github+json' 
+            }
       })
 
-      // 3. Förbered data för upsert
       const eventsToSave = githubEvents.map(e => ({
         github_event_id: e.id,
         type: e.type,
         github_username: e.actor.login,
         avatar_url: e.actor.avatar_url,
         created_at: e.created_at,
-        repo_name: e.repo?.name, // Spara repot för din feed
-        payload: e.payload // Spara payload för att kunna visa "pushade 3 commits"
+        repo_name: e.repo?.name, 
+        payload: e.payload 
       }))
 
       if (eventsToSave.length > 0) {
