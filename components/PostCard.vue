@@ -10,7 +10,12 @@ const props = defineProps({
 
 const emit = defineEmits(['refresh'])
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+// const user = useSupabaseUser() 
+const user = ref({
+  user_metadata: {
+    user_name: 'TestDeveloper' // testing purposs
+  }
+})
 
 const currentUsername = computed(() => {
   return user.value?.user_metadata?.user_name || user.value?.user_metadata?.preferred_username || 'Anonym'
@@ -148,17 +153,16 @@ const submitComment = async () => {
         <input 
           v-model="newCommentText"
           type="text" 
-          placeholder="Write a comment... (use @ to tag)" 
+          placeholder="Write a comment... (press Enter to send)" 
           class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
           :disabled="isSubmittingComment"
         />
-        <button 
-          type="submit" 
-          class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
-          :disabled="!newCommentText.trim() || isSubmittingComment"
-        >
-          Send
-        </button>
+        <InteractiveSendButton
+  type="submit"
+  :text="isSubmittingComment ? 'Sending...' : 'Send'"
+  :disabled="!newCommentText.trim() || isSubmittingComment"
+  class="bg-emerald-600 hover:bg-emerald-500 border-white/10 text-white font-semibold text-xs rounded-xl focus:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+/>
       </form>
     </div>
 
