@@ -56,7 +56,7 @@ if (import.meta.client) {
       localStorage.setItem('feed_cache', JSON.stringify(newVal))
     }
   }, { deep: true })
-})
+}
 
 const reloadFeed = async () => {
   if (import.meta.client) {
