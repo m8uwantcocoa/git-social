@@ -24,11 +24,7 @@ const signOut = async () => {
         Git<span class="text-lime-400"> - </span>Social
       </h1>
       <div class="flex-1 max-w-[180px]">
-        <div
-          class="py-1 px-3 text-xs rounded-lg bg-lime-400 text-emerald-950 shadow-sm font-bold text-center"
-        >
-          Followers
-        </div>
+        
       </div>
 
       <div class="flex items-center gap-2">

@@ -8,21 +8,20 @@ const supabase = useSupabaseClient()
 const { data: githubData, pending, refresh } = await useAsyncData('github-profile', async () => {
   const { data: { session } } = await supabase.auth.getSession()
 
-  await $fetch('/api/github/session', {
-    method: 'POST',
-    body: {
-      providerToken: data.session?.provider_token || null
-    }
-  })
-}
+  if (session?.provider_token) {
+    await $fetch('/api/github/session', {
+      method: 'POST',
+      body: {
+        providerToken: session.provider_token
+      }
+    })
+  }
 
-await syncProviderToken()
+  const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
 
-const { data: githubData, pending, refresh } = await useFetch('/api/github/me', {
-  default: () => ({
-    profile: null,
-    repos: []
-  })
+  return await $fetch('/api/github/me', { headers })
+}, {
+  default: () => ({ profile: null, repos: [] })
 })
 
 const refreshing = ref(false)
@@ -31,7 +30,6 @@ const refreshProfile = async () => {
   refreshing.value = true
 
   try {
-    await syncProviderToken()
     await refresh()
   } finally {
     refreshing.value = false
