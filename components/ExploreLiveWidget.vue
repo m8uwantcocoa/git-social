@@ -5,23 +5,66 @@ const currentTime = ref('')
 const currentDate = ref('')
 let timer: ReturnType<typeof setInterval>
 
+const locationData = ref({
+  city: 'Locating...',
+  condition: 'Gathering weather info...',
+  temp: '--'
+})
+
+const fetchWeatherFromApi = async (lat: number, lon: number) => {
+  try {
+    const data = await $fetch(`/api/weather?lat=${lat}&lon=${lon}`)
+    
+    if (data.error) {
+      locationData.value.condition = 'Could not fetch'
+      return
+    }
+
+    locationData.value = {
+      city: data.city,
+      condition: data.condition,
+      temp: data.temp
+    }
+  } catch (err) {
+    locationData.value.condition = 'Could not fetch'
+  }
+}
+
+const initLocalWeather = () => {
+  if (!navigator.geolocation) {
+    locationData.value.condition = 'Not supported'
+    return
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      fetchWeatherFromApi(position.coords.latitude, position.coords.longitude)
+    },
+    (error) => {
+      console.warn('Location denied:', error)
+      locationData.value = {
+        city: 'Git-Social HQ',
+        condition: 'Location denied',
+        temp: '--'
+      }
+    },
+    { timeout: 10000 }
+  )
+}
+
 onMounted(() => {
+  initLocalWeather()
+
   const updateTime = () => {
     const now = new Date()
-    currentTime.value = now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })
-    currentDate.value = now.toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })
+    currentTime.value = now.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })
+    currentDate.value = now.toLocaleDateString('en', { weekday: 'short', day: 'numeric', month: 'short' })
   }
   updateTime()
   timer = setInterval(updateTime, 60000)
 })
 
 onUnmounted(() => clearInterval(timer))
-
-const locationData = ref({
-  city: 'Malmö, SE',
-  condition: 'Växlande molnighet',
-  temp: 18
-})
 
 const latestActivity = ref([
   { id: 1, type: 'post', user: 'Alex-Aug', description: 'pushade 3 commits till', target: 'git-social', time: '2m' },
@@ -50,11 +93,11 @@ const latestActivity = ref([
     </div>
 
     <div class="bg-slate-50 rounded-2xl flex flex-col pt-3 overflow-hidden">
-      <h2 class="font-extrabold text-slate-900 text-xl px-4 pb-3">Explore & Live</h2>
+      <h2 class="font-extrabold text-slate-900 text-xl px-4 pb-3">Weather</h2>
       
       <div class="px-4 py-3 hover:bg-slate-100 transition-colors cursor-pointer flex justify-between items-center">
         <div class="flex flex-col">
-          <span class="text-[13px] text-slate-500 mb-0.5">Väder i {{ locationData.city }}</span>
+          <span class="text-[13px] text-slate-500 mb-0.5"> {{ locationData.city }}</span>
           <span class="font-bold text-slate-900 text-[15px]">{{ locationData.condition }}</span>
           <span class="text-[13px] text-slate-500 mt-0.5">{{ locationData.temp }}°C</span>
         </div>
@@ -66,7 +109,7 @@ const latestActivity = ref([
     </div>
 
     <div class="bg-slate-50 rounded-2xl flex flex-col pt-3 overflow-hidden">
-      <h2 class="font-extrabold text-slate-900 text-xl px-4 pb-3">Senaste aktivitet</h2>
+      <h2 class="font-extrabold text-slate-900 text-xl px-4 pb-3">Latest Activity</h2>
 
       <div class="flex flex-col">
         <div v-for="event in latestActivity" :key="event.id" 
