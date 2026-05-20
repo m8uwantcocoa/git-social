@@ -36,8 +36,13 @@ const loggaUt = async () => {
 
         
       </section>
+      <section class="space-y-3">
+        <h3 class="text-xs font-semibold text-emerald-500/80 uppercase tracking-wider pl-2"> -- set ing s</h3>
 
-      <section class="pt-4 space-x-12 flex items-center justify-center">
+        
+      </section>
+
+      <section class="pt-4 space-x-2 flex items-center justify-center">
         
         <InteractiveHoverButton
             text="xxx"
