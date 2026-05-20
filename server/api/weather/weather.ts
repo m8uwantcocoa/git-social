@@ -33,7 +33,11 @@ export default defineEventHandler(async (event): Promise<WeatherResponse> => {
   }
 
   try {
-    const geoPromise = $fetch<any>(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+    const geoPromise = $fetch<any>(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
+      headers: {
+        'User-Agent': 'Git-Social/1.0 (contact@git-social.com)'
+      }
+    })
     const weatherPromise = $fetch<any>(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
     const [geoRes, weatherRes] = await Promise.all([geoPromise, weatherPromise])
     const city = geoRes.address?.city || geoRes.address?.town || geoRes.address?.village || 'Okänd ort'

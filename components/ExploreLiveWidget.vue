@@ -16,7 +16,7 @@ const locationData = ref({
 
 const fetchWeatherFromApi = async (lat: number, lon: number) => {
   try {
-    const data = await $fetch(`server/api/weather?lat=${lat}&lon=${lon}`)
+    const data = await $fetch(`/api/weather/weather?lat=${lat}&lon=${lon}`)
     
     if (data.error) {
       locationData.value.condition = 'Could not fetch'
