@@ -8,14 +8,8 @@ defineProps({
   },
 });
 
-const supabase = useSupabaseClient()
 const { avatarUrl } = useGitHubIdentity()
 const isRefreshing = ref(false)
-
-const signOut = async () => {
-  await supabase.auth.signOut()
-  await navigateTo('/login')
-}
 
 const triggerRefresh = () => {
   if (isRefreshing.value) {
@@ -36,9 +30,14 @@ const triggerRefresh = () => {
     class="sticky top-0 z-50 backdrop-blur-md bg-emerald-900/90 border-b border-white/10 py-3 px-4 shadow-lg shadow-emerald-950/20"
   >
     <div class="max-w-md mx-auto flex items-center justify-between gap-3">
-      <h1 class="text-xl font-extrabold tracking-tight text-white select-none">
-        Git<span class="text-lime-400"> - </span>Social
-      </h1>
+      <NuxtLink
+        to="/"
+        class="text-2xl font-bold text-lime-400 hover:text-lime-300 transition-colors"
+      >
+        <h1 class="text-xl font-extrabold tracking-tight text-white select-none">
+          Git<span class="text-lime-400"> - </span>Social
+        </h1>
+      </NuxtLink>
       <div class="flex-1 max-w-[180px]">
         
       </div>
@@ -78,13 +77,6 @@ const triggerRefresh = () => {
             class="w-9 h-9 rounded-full border border-white/10 bg-emerald-950/40 object-cover"
           >
         </NuxtLink>
-
-        <button
-          @click="signOut"
-          class="px-3 py-2 text-xs font-semibold rounded-xl border border-white/10 bg-emerald-950/40 text-emerald-100 transition hover:bg-emerald-950/70 hover:text-white flex-shrink-0"
-        >
-          Sign out
-        </button>
       </div>
     </div>
   </header>
