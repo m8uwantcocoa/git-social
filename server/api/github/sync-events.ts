@@ -10,14 +10,20 @@ interface GitHubEvent {
 export default defineEventHandler(async (event) => {
   const supabase = await serverSupabaseClient(event)
 
-  const { data: profiles, error: profileError } = await supabase
-    .from('profiles')
-    .select('github_username')
-    .not('github_username', 'is', null)
+  const body = await readBody(event).catch(() => ({}))
+  let usernamesToSync = body?.usernames || []
 
-  if (profileError || !profiles) return { success: false, error: 'Kunde inte hämta profiler' }
+  if (!usernamesToSync || usernamesToSync.length === 0) {
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('github_username')
+      .not('github_username', 'is', null)
 
-  const syncPromises = profiles.map(async (profile) => {
+    if (profileError || !profiles) return { success: false, error: 'Kunde inte hämta profiler' }
+    usernamesToSync = profiles.map(p => p.github_username)
+  }
+
+  const syncPromises = usernamesToSync.map(async (username: string) => {
     try {
       const headers: Record<string, string> = {
         'Accept': 'application/vnd.github+json'
@@ -26,7 +32,7 @@ export default defineEventHandler(async (event) => {
         headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
       }
 
-      const githubEvents = await $fetch<any[]>(`https://api.github.com/users/${profile.github_username}/events`, {
+      const githubEvents = await $fetch<any[]>(`https://api.github.com/users/${username}/events`, {
         headers
       })
 
@@ -62,11 +68,11 @@ export default defineEventHandler(async (event) => {
       if (eventsToSave.length > 0) {
         const { error: upsertError } = await supabase.from('events').upsert(eventsToSave, { onConflict: 'github_event_id' })
         if (upsertError) {
-          console.error(`Kunde inte spara events för ${profile.github_username} i databasen:`, upsertError.message)
+          console.error(`Kunde inte spara events för ${username} i databasen:`, upsertError.message)
         }
       }
     } catch (err) {
-      console.error(`Fel vid synk av ${profile.github_username}:`, err)
+      console.error(`Fel vid synk av ${username}:`, err)
     }
   })
 

@@ -79,13 +79,11 @@ let searchTimeout: any
 
 const fetchMyFollows = async () => {
   if (!currentUser.value) return
-  const { data } = await supabase
-    .from('follows')
-    .select('following_id')
-    .eq('follower_id', currentUser.value.id)
-  
-  if (data) {
-    followingSet.value = new Set(data.map(f => f.following_id))
+  if (import.meta.client) {
+    const stored = localStorage.getItem('git_social_following')
+    if (stored) {
+      try { followingSet.value = new Set(JSON.parse(stored)) } catch {}
+    }
   }
   await fetchLatestActivity()
 }
@@ -114,29 +112,20 @@ const handleSearch = () => {
   }, 300) 
 }
 
-const toggleFollow = async (targetId: string) => {
-  const isFollowing = followingSet.value.has(targetId)
+const toggleFollow = async (targetUsername: string) => {
+  const isFollowing = followingSet.value.has(targetUsername)
   
   if (isFollowing) {
-    followingSet.value.delete(targetId)
+    followingSet.value.delete(targetUsername)
   } else {
-    followingSet.value.add(targetId)
+    followingSet.value.add(targetUsername)
   }
 
-  try {
-    await $fetch('/api/follow', {
-      method: 'POST',
-      body: { targetUserId: targetId }
-    })
-    await fetchLatestActivity()
-  } catch (err) {
-    console.error('Failed to toggle follow status:', err)
-    if (isFollowing) {
-      followingSet.value.add(targetId)
-    } else {
-      followingSet.value.delete(targetId)
-    }
+  if (import.meta.client) {
+    localStorage.setItem('git_social_following', JSON.stringify(Array.from(followingSet.value)))
+    window.dispatchEvent(new Event('following-updated'))
   }
+  await fetchLatestActivity()
 }
 
 onMounted(() => {
@@ -192,15 +181,7 @@ const formatTimeAgo = (dateString: string) => {
 
 const fetchLatestActivity = async () => {
   if (!currentUser.value) return
-  const followedIds = Array.from(followingSet.value)
-  if (followedIds.length === 0) {
-    latestActivity.value = []
-    return
-  }
-
-  const { data: profiles } = await supabase.from('profiles').select('github_username').in('id', followedIds)
-  const usernamesToTrack = profiles ? profiles.map(p => p.github_username) : []
-  
+  const usernamesToTrack = Array.from(followingSet.value)
   if (usernamesToTrack.length === 0) {
     latestActivity.value = []
     return
@@ -256,13 +237,13 @@ const fetchLatestActivity = async () => {
                  </div>
               </div>
               <button 
-                @click="toggleFollow(user.id)"
+                @click="toggleFollow(user.github_username)"
                 class="px-4 py-1.5 rounded-full text-[13px] font-bold transition-all shrink-0"
-                :class="followingSet.has(user.id) 
+                :class="followingSet.has(user.github_username) 
                   ? 'bg-slate-100 text-slate-800 border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200' 
                   : 'bg-slate-900 text-white hover:bg-slate-800'"
               >
-                {{ followingSet.has(user.id) ? 'Following' : 'Follow' }}
+                {{ followingSet.has(user.github_username) ? 'Following' : 'Follow' }}
               </button>
             </div>
           </div>

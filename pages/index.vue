@@ -1,10 +1,11 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 definePageMeta({ middleware: 'auth' })
 
 const supabase = useSupabaseClient()
 const currentUser = useSupabaseUser()
+const { username: currentUsername } = useGitHubIdentity()
 const activeTab = ref('global')
 
 const showConfetti = ref(false)
@@ -14,6 +15,18 @@ onMounted(() => {
     showConfetti.value = true
     localStorage.removeItem('show_welcome_confetti')
   }
+
+  const cached = localStorage.getItem('feed_cache')
+  if (cached && (!posts.value || posts.value.length === 0)) {
+    try { posts.value = JSON.parse(cached) } catch {}
+  }
+
+  window.addEventListener('following-updated', reloadFeed)
+  reloadFeed()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('following-updated', reloadFeed)
 })
 
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
@@ -21,56 +34,38 @@ const { data: posts, refresh } = await useAsyncData('posts', async () => {
 
   let usernamesToTrack = []
 
-  if (activeTab.value === 'following') {
-    const { data: follows } = await supabase
-      .from('follows')
-      .select('following_id')
-      .eq('follower_id', currentUser.value.id)
-    
-    const followedIds = follows ? follows.map(f => f.following_id) : []
-    followedIds.push(currentUser.value.id)
-
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('github_username')
-      .in('id', followedIds)
-
-    usernamesToTrack = profiles ? profiles.map(p => p.github_username).filter(Boolean) : []
-    
-    if (usernamesToTrack.length === 0) return []
+  if (import.meta.client) {
+    const stored = localStorage.getItem('git_social_following')
+    if (stored) {
+      try { usernamesToTrack = JSON.parse(stored) } catch {}
+    }
   }
+  
+  if (currentUsername.value && currentUsername.value !== 'Anonymous' && !usernamesToTrack.includes(currentUsername.value)) {
+    usernamesToTrack.push(currentUsername.value)
+  }
+  
+  if (usernamesToTrack.length === 0) return []
 
-  let query = supabase
+  const { data: feedEvents, error } = await supabase
     .from('events')
     .select(`
       *,
       event_likes (github_username),
       comments (id, github_username, text, created_at)
     `)
+    .in('github_username', usernamesToTrack) 
     .order('created_at', { ascending: false })
     .limit(50)
 
-  if (activeTab.value === 'following') {
-    query = query.in('github_username', usernamesToTrack)
-  }
+  if (error) console.error("Fel vid hämtning av feed:", error.message)
 
-  const { data: feedEvents } = await query
   return feedEvents || []
-}, {
-  watch: [activeTab],
-  getCachedData(key) {
-    const nuxtApp = useNuxtApp()
-    if (import.meta.client) {
-      const cached = localStorage.getItem('feed_cache')
-      if (cached) return JSON.parse(cached)
-    }
-    return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
-  }
 })
 
 if (import.meta.client) {
   watch(posts, (newVal) => {
-    if (newVal) {
+    if (newVal && newVal.length > 0) {
       localStorage.setItem('feed_cache', JSON.stringify(newVal))
     }
   }, { deep: true })
@@ -78,9 +73,24 @@ if (import.meta.client) {
 
 const reloadFeed = async () => {
   if (import.meta.client) {
-    localStorage.removeItem('feed_cache')
+    let usernames = []
+    const stored = localStorage.getItem('git_social_following')
+    if (stored) {
+      try { usernames = JSON.parse(stored) } catch {}
+    }
+
+    if (currentUsername.value && currentUsername.value !== 'Anonymous' && !usernames.includes(currentUsername.value)) {
+      usernames.push(currentUsername.value)
+    }
+
+    try {
+      await $fetch('/api/github/sync-events', { method: 'POST', body: { usernames } })
+    } catch (e) {}
+  } else {
+    try {
+      await $fetch('/api/github/sync-events', { method: 'POST' })
+    } catch (e) {}
   }
-  await $fetch('/api/github/sync-events', { method: 'POST' })
   await refresh()
 }
 </script>
