@@ -151,9 +151,22 @@ const submitComment = async () => {
 <template>
   <div class="bg-emerald-950 rounded-3xl p-5 border border-white/5 hover:border-white/10 transition-colors">
     <div class="flex items-center space-x-3 mb-4">
-      <img :src="post.avatar_url || 'https://github.com/github.png'" class="w-10 h-10 rounded-full border border-slate-700/50 bg-slate-800 object-cover" alt="Avatar" />
+      <NuxtLink
+        :to="`/users/${post.github_username}`"
+        class="block transition-transform hover:scale-105"
+        :aria-label="`Open ${post.github_username} profile`"
+      >
+        <img :src="post.avatar_url || 'https://github.com/github.png'" class="w-10 h-10 rounded-full border border-slate-700/50 bg-slate-800 object-cover" alt="Avatar" />
+      </NuxtLink>
       <div class="flex-1 leading-tight">
-        <h3 class="font-semibold text-sm text-slate-100">{{ post.github_username }}</h3>
+        <h3 class="font-semibold text-sm text-slate-100">
+          <NuxtLink
+            :to="`/users/${post.github_username}`"
+            class="transition-colors hover:text-emerald-300"
+          >
+            {{ post.github_username }}
+          </NuxtLink>
+        </h3>
         <span class="text-[11px] text-slate-500 font-medium tracking-wide uppercase">
           {{ new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}
         </span>
