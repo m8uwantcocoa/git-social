@@ -147,12 +147,12 @@ onUnmounted(() => clearInterval(timer))
 const latestActivity = ref<any[]>([])
 
 const getEventDescription = (event: any) => {
-  const type = event.type
+  const type = event.event_type
   const payload = event.payload || {}
 
   if (type === 'PushEvent') {
     const commitsCount = payload.size || payload.commits?.length || 0
-    return `pushed ${commitsCount} commit${commitsCount !== 1 ? 's' : ''} to`
+    return `pushed a commit to`
   } else if (type === 'CreateEvent') {
     return `created a new ${payload.ref_type || 'repository'}`
   } else if (type === 'WatchEvent') {
