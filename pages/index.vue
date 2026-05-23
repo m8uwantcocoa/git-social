@@ -112,11 +112,10 @@ const reloadFeed = async () => {
     <div class="mx-auto w-full max-w-7xl px-3 pt-4 sm:px-4 sm:pt-6 lg:px-6">
       <div class="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-8">
         
-        <div class="hidden lg:block lg:col-span-2"></div> 
+        <div class="hidden lg:block lg:col-span-2"></div> >
 
         <main class="mx-auto w-full max-w-md min-w-0 space-y-5 lg:col-span-6">
           
-        
         <div class="flex items-center gap-8 border-b border-slate-200/60 mb-6 px-2">
            <div class="relative  pb-3">
             <h2 class="text-[16px] font-bold text-slate-900">Feed</h2>
