@@ -109,10 +109,10 @@ const reloadFeed = async () => {
 
     <AppSidebar class="hidden lg:block" />
 
-    <div class="mx-auto w-full max-w-7xl px-3 pt-4 sm:px-4 sm:pt-6 lg:px-6">
+    <div class="w-full px-3 pt-4 sm:px-4 sm:pt-6 lg:pl-[300px] lg:pr-6">
       <div class="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-8">
         
-        <div class="hidden lg:block lg:col-span-2"></div> >
+        <div class="hidden lg:block lg:col-span-1"></div> 
 
         <main class="mx-auto w-full max-w-md min-w-0 space-y-5 lg:col-span-6">
           
