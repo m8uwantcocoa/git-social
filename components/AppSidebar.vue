@@ -30,7 +30,8 @@ const signOut = async () => {
 <template>
   <UserSearchOverlay />
 
-  <aside class="fixed left-0 top-0 bottom-0 z-40 w-[245px] border-r border-slate-200 bg-slate-50 text-slate-900">
+  <aside
+    class="fixed left-0 top-0 bottom-0 z-40 hidden w-[245px] border-r border-slate-200 bg-slate-50 text-slate-900 lg:block">
     <div class="flex h-full flex-col px-3 py-10">
       <div class="mb-8 px-3">
       </div>
