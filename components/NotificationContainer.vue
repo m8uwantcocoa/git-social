@@ -33,7 +33,7 @@ onMounted(() => {
       (payload) => {
 
         // så vi kan se under testet vad som fungar. ta bort // när vi klara, annars blir de dubbel
-        // if (payload.new.github_username === currentUsername.value) return;
+         if (payload.new.github_username === currentUsername.value) return;
 
         addNotification({
           name: payload.new.github_username,
@@ -56,7 +56,6 @@ onUnmounted(() => {
 
 <template>
   <div class="fixed z-[100] flex flex-col gap-4 pointer-events-none w-full px-4 bottom-28 left-0 md:w-full md:max-w-[350px] md:bottom-6 md:right-6 md:left-auto md:px-0">
-    <!-- AnimatedList owns the shared notification transition behavior. -->
     <AnimatedList class="pointer-events-auto">
       <NotificationCard
         v-for="data in notifications"
