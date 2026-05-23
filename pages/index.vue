@@ -7,7 +7,6 @@ const supabase = useSupabaseClient()
 const currentUser = useSupabaseUser()
 const { username: currentUsername } = useGitHubIdentity()
 const activeTab = ref('global')
-
 const showConfetti = ref(false)
 
 onMounted(() => {
@@ -96,7 +95,7 @@ const reloadFeed = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-mist-100 text-slate-100 font-sans pb-24 selection:bg-emerald-500/30">
+  <div class="min-h-screen overflow-x-hidden bg-mist-100 pt-[68px] text-slate-100 font-sans pb-24 selection:bg-emerald-500/30">
     <Confetti 
       v-if="showConfetti" 
       class="fixed inset-0 z-[100] pointer-events-none w-full h-full"
@@ -106,14 +105,16 @@ const reloadFeed = async () => {
     <AppHeader
       v-model:activeTab="activeTab"
       @refresh="reloadFeed"
-    />
+      />
 
-    <div class="max-w-7xl mx-auto w-full px-4 pt-6">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <AppSidebar class="hidden lg:block" />
+
+    <div class="mx-auto w-full max-w-7xl px-3 pt-4 sm:px-4 sm:pt-6 lg:px-6">
+      <div class="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-8">
         
-        <div class="hidden lg:block lg:col-span-3"></div>
+        <div class="hidden lg:block lg:col-span-2"></div> <!-- // ändra till span-3 om vi vill byta till gamla layouten -->
 
-        <main class="lg:col-span-6 w-full max-w-md mx-auto space-y-5">
+        <main class="mx-auto w-full max-w-md min-w-0 space-y-5 lg:col-span-6">
           
           <div v-if="!posts || posts.length === 0" class="flex flex-col items-center justify-center mt-20 text-slate-500">
             <svg class="w-12 h-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +134,7 @@ const reloadFeed = async () => {
           
         </main>
 
-        <aside class="hidden lg:block lg:col-span-3 sticky top-[80px] h-fit">
+        <aside class="sticky top-[88px] hidden h-fit min-w-0 lg:col-span-3 lg:block">
             <ExploreLiveWidget />
         </aside>
 

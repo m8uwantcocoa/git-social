@@ -12,8 +12,8 @@ const signOut = async () => {
 </script>
 
 <template>
-  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm px-4">
-    <nav class="backdrop-blur-md bg-emerald-950/80 border border-white/10 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center justify-between gap-1">
+  <div class="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 sm:px-4 lg:hidden">
+    <nav class="flex items-center justify-between gap-1 rounded-2xl border border-white/10 bg-emerald-950/80 px-4 py-2.5 shadow-2xl backdrop-blur-md">
       <NuxtLink
         to="/"
         aria-label="Home"
