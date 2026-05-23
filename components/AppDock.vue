@@ -1,6 +1,11 @@
 <script setup>
 const route = useRoute()
 const supabase = useSupabaseClient()
+const isSearchOpen = useState('git-social-search-open', () => false)
+
+const openSearch = () => {
+  isSearchOpen.value = true
+}
 
 const isHome = computed(() => route.path === '/')
 const isProfile = computed(() => route.path.startsWith('/profile'))
@@ -12,6 +17,8 @@ const signOut = async () => {
 </script>
 
 <template>
+  <UserSearchOverlay />
+
   <div class="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 sm:px-4 lg:hidden">
     <nav class="flex items-center justify-between gap-1 rounded-2xl border border-white/10 bg-emerald-950/80 px-4 py-2.5 shadow-2xl backdrop-blur-md">
       <NuxtLink
@@ -31,6 +38,7 @@ const signOut = async () => {
 
       <button
         type="button"
+        @click="openSearch"
         class="flex items-center justify-center p-2 rounded-xl text-emerald-200 hover:text-lime-400 hover:bg-white/5 transition-all group"
         aria-label="Search"
       >

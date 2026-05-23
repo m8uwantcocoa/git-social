@@ -8,6 +8,13 @@ defineProps({
 
 const emit = defineEmits(['close'])
 
+const isSearchOpen = useState('git-social-search-open', () => false)
+
+const openSearch = () => {
+    isSearchOpen.value = true
+    emit('close')
+}
+
 const route = useRoute()
 const supabase = useSupabaseClient()
 
@@ -21,6 +28,8 @@ const signOut = async () => {
 </script>
 
 <template>
+  <UserSearchOverlay />
+
   <aside class="fixed left-0 top-0 bottom-0 z-40 w-[245px] border-r border-slate-200 bg-slate-50 text-slate-900">
     <div class="flex h-full flex-col px-3 py-10">
       <div class="mb-8 px-3">
@@ -55,6 +64,7 @@ const signOut = async () => {
 
         <button
           type="button"
+          @click="openSearch"
           class="group flex w-full items-center gap-4 rounded-xl px-3 py-3 text-base text-slate-700 transition-all duration-150 hover:bg-slate-200/60 hover:text-slate-950"
         >
           <svg
