@@ -66,7 +66,7 @@ export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
         headers: githubApiHeaders(providerToken),
         query: {
           sort: 'updated',
-          per_page: 5
+          per_page: 100
         }
       })
     ])
