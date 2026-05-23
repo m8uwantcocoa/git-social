@@ -116,6 +116,13 @@ const reloadFeed = async () => {
 
         <main class="mx-auto w-full max-w-md min-w-0 space-y-5 lg:col-span-6">
           
+        <main class="lg:col-span-6 w-full max-w-md mx-auto space-y-5">
+        <div class="flex items-center gap-8 border-b border-slate-200/60 mb-6 px-2">
+           <div class="relative  pb-3">
+            <h2 class="text-[16px] font-bold text-slate-900">Feed</h2>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-lime-400 rounded-t-full"></div>
+          </div>
+        </div>
           <div v-if="!posts || posts.length === 0" class="flex flex-col items-center justify-center mt-20 text-slate-500">
             <svg class="w-12 h-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
