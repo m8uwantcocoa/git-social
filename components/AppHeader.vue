@@ -1,12 +1,12 @@
 <script setup>
-const emit = defineEmits(["update:activeTab", "refresh"]);
+const emit = defineEmits(['update:activeTab', 'refresh'])
 
 defineProps({
   activeTab: {
     type: String,
     required: true,
   },
-});
+})
 
 const { avatarUrl } = useGitHubIdentity()
 const isRefreshing = ref(false)
@@ -27,20 +27,21 @@ const triggerRefresh = () => {
 
 <template>
   <header
-    class="sticky top-0 z-50 backdrop-blur-md bg-emerald-900/90 border-b border-white/10 py-3 px-4 shadow-lg shadow-emerald-950/20"
+    class="fixed inset-x-0 top-0 z-[70] border-b border-white/10 bg-emerald-900/95 px-3 py-3 shadow-lg shadow-emerald-950/20 backdrop-blur-md sm:px-4"
   >
-    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
-      <NuxtLink
-        to="/"
-        class="text-2xl font-bold text-lime-400 hover:text-lime-300 transition-colors"
-      >
-        <h1 class="text-xl font-extrabold tracking-tight text-white select-none">
-          Git<span class="text-lime-400"> - </span>Social
-        </h1>
-      </NuxtLink>
-      <div class="flex-1 max-w-[180px]">
-        
+    <div class="mx-auto flex w-full max-w-7xl min-w-0 items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <NuxtLink
+          to="/"
+          class="min-w-0 text-2xl font-bold text-lime-400 transition-colors hover:text-lime-300"
+        >
+          <h1 class="truncate text-lg font-extrabold tracking-tight text-white select-none sm:text-xl">
+            Git<span class="text-lime-400"> - </span>Social
+          </h1>
+        </NuxtLink>
       </div>
+
+      <div class="min-w-0 flex-1"></div>
 
       <div class="flex items-center gap-2">
         <button
