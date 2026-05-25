@@ -109,19 +109,17 @@ const reloadFeed = async () => {
 
     <AppSidebar class="hidden lg:block" />
 
-    <div class="w-full px-3 pt-4 sm:px-4 sm:pt-6 lg:pl-[300px] lg:pr-6">
-      <div class="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-8">
-        
-        <div class="hidden lg:block lg:col-span-1"></div> 
-
-        <main class="mx-auto w-full max-w-md min-w-0 space-y-5 lg:col-span-6">
+    <div class="w-full px-3 pt-4 sm:px-5 sm:pt-5 lg:ml-[245px] lg:w-[calc(100%-245px)] lg:px-10 xl:px-16">
+      <div class="mx-auto flex max-w-7xl justify-center items-start gap-10 lg:gap-16 xl:gap-24">
+        <main class="min-w-0 w-full max-w-2xl space-y-5">
           
-        <div class="flex items-center gap-8 border-b border-slate-200/60 mb-6 px-2">
-           <div class="relative  pb-3">
-            <h2 class="text-[16px] font-bold text-slate-900">Feed</h2>
-            <div class="absolute bottom-0 left-0 w-full h-1 bg-lime-400 rounded-t-full"></div>
+          <div class="mb-6 flex items-center border-b border-slate-200/60 px-2">
+            <div class="relative pb-3">
+              <h2 class="text-base font-bold text-slate-900">Feed</h2>
+              <div class="absolute bottom-0 left-0 h-1 w-full rounded-t-full bg-lime-400"></div>
+            </div>
           </div>
-        </div>
+
           <div v-if="!posts || posts.length === 0" class="flex flex-col items-center justify-center mt-20 text-slate-500">
             <svg class="w-12 h-12 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -140,10 +138,9 @@ const reloadFeed = async () => {
           
         </main>
 
-        <aside class="sticky top-[88px] hidden h-fit min-w-0 lg:col-span-3 lg:block">
+        <aside class="sticky top-[88px] hidden w-[320px] shrink-0 lg:block xl:w-[380px]">
             <ExploreLiveWidget />
         </aside>
-
       </div>
     </div>
     
