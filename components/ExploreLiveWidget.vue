@@ -205,7 +205,7 @@ const fetchLatestActivity = async () => {
 </script>
 
 <template>
-  <aside class="sticky top-[80px] w-full flex flex-col gap-4 pb-12 h-fit">
+  <aside class="w-full flex flex-col gap-4 pb-12 h-fit">
     
     <div class="sticky top-0 z-20 bg-mist-100 pt-1 pb-2"> 
       <div class="relative group">

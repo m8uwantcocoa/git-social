@@ -95,7 +95,7 @@ const reloadFeed = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen overflow-x-hidden bg-mist-100 pt-[68px] text-slate-100 font-sans pb-24 selection:bg-emerald-500/30">
+  <div class="min-h-screen bg-mist-100 pt-[68px] text-slate-100 font-sans pb-24 selection:bg-emerald-500/30">
     <Confetti 
       v-if="showConfetti" 
       class="fixed inset-0 z-[100] pointer-events-none w-full h-full"
