@@ -8,7 +8,6 @@ Git-Social turns standard GitHub activity into an interactive social media feed.
 **Key Features:**
 - **GitHub Activity Feed:** Automatically syncs GitHub events (pushes, PRs, issues) to a social timeline.
 - **Social Features:** Follow other developers, like events, and comment on them.
-- **Real-Time Notifications:** Get notified instantly when someone interacts with your activity.
 - **Live Explore Widget:** Features a real-time weather widget (via Open-Meteo), latest activity tracker, and user search.
 - **Developer Profiles:** View connected GitHub stats and repositories directly in the app.
 
