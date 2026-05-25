@@ -21,6 +21,10 @@ const supabase = useSupabaseClient()
 const isHome = computed(() => route.path === '/')
 const isProfile = computed(() => route.path.startsWith('/profile'))
 
+const user = useSupabaseUser()
+const avatarUrl = computed(() => user.value?.user_metadata?.avatar_url)
+const username = computed(() => user.value?.user_metadata?.preferred_username || user.value?.user_metadata?.user_name || 'User')
+
 const signOut = async () => {
     await supabase.auth.signOut()
     await navigateTo('/login')
@@ -31,12 +35,12 @@ const signOut = async () => {
   <UserSearchOverlay />
 
   <aside
-    class="fixed left-0 top-0 bottom-0 z-40 hidden w-[245px] border-r border-slate-200 bg-slate-50 text-slate-900 lg:block">
+    class="fixed inset-y-0 left-0 z-40 hidden w-[245px] border-r border-slate-200 bg-slate-50 text-slate-900 lg:block">
     <div class="flex h-full flex-col px-3 py-10">
-      <div class="mb-8 px-3">
+      <div class="mb-8 pt-12 px-3">
       </div>
 
-      <nav class="space-y-1">
+      <nav class="space-y-5">
         <NuxtLink
           to="/"
           @click="emit('close')"
@@ -110,11 +114,27 @@ const signOut = async () => {
         </NuxtLink>
       </nav>
 
-      <div class="mt-auto space-y-1">
+      <div class="mt-auto flex flex-col gap-2">
+        <div class=" flex items-center gap-3 rounded-xl  p-3">
+          <img 
+            v-if="avatarUrl" 
+            :src="avatarUrl" 
+            alt="Avatar" 
+            class="h-6 w-6 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm"
+          />
+          <div v-else class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700 ring-2 ring-white shadow-sm">
+            {{ username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="flex min-w-0 flex-col">
+            <span class="truncate text-sm font-bold text-slate-900">{{ username }}</span>
+            <span class="truncate text-xs font-medium text-slate-500">Github Account</span>
+          </div>
+        </div>
+
         <button
           type="button"
           @click="signOut"
-          class="group flex w-full items-center gap-4 rounded-xl px-3 py-3 text-base text-slate-700 transition-all duration-150 hover:bg-red-50 hover:text-red-600"
+          class="group flex w-full items-center gap-2 rounded-xl px-3 py-3 text-base text-slate-700 transition-all duration-150 hover:bg-red-50 hover:text-red-600"
         >
           <svg
             class="h-6 w-6 shrink-0 stroke-2 transition-transform duration-150 group-hover:scale-105"
