@@ -149,12 +149,12 @@ const submitComment = async () => {
 </script>
 
 <template>
-  <div class="bg-emerald-950 rounded-3xl p-5 border border-white/5 hover:border-white/10 transition-colors">
+  <div class="bg-slate-50/80 shadow-sm backdrop-blur-sm rounded-3xl p-5 border border-slate-200/60 hover:border-slate-300 hover:shadow-md transition-all">
     <div class="mb-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
       <div class="flex min-w-0 items-center space-x-3">
-        <img :src="post.avatar_url || 'https://github.com/github.png'" class="h-10 w-10 shrink-0 rounded-full border border-slate-700/50 bg-slate-800 object-cover" alt="Avatar" />
+        <img :src="post.avatar_url || 'https://github.com/github.png'" class="h-10 w-10 shrink-0 rounded-full border border-slate-200 bg-slate-100 object-cover" alt="Avatar" />
         <div class="min-w-0 leading-tight">
-          <h3 class="truncate text-sm font-semibold text-slate-100">{{ post.github_username }}</h3>
+          <h3 class="truncate text-sm font-semibold text-slate-800">{{ post.github_username }}</h3>
           <span class="mt-0.5 block truncate text-[11px] font-medium uppercase tracking-wide text-slate-500">
             {{ new Date(post.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) }} • 
             {{ new Date(post.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) }}
@@ -162,7 +162,7 @@ const submitComment = async () => {
         </div>
       </div>
 
-      <div class="inline-flex min-w-0 shrink-0 max-w-full items-center space-x-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5 text-emerald-400 sm:max-w-[50%]">
+      <div class="inline-flex min-w-0 shrink-0 max-w-full items-center space-x-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5 text-emerald-700 sm:max-w-[50%]">
         <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
@@ -172,14 +172,14 @@ const submitComment = async () => {
     </div>
 
     <div class="mb-5">
-      <p class="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">
+      <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
         {{ post.message || generatedMessage }}
       </p>
     </div>
 
-    <div class="flex items-center space-x-6 pt-1 border-b border-white/5 pb-3 mb-3">
-      <button @click="toggleLike" :class="['flex items-center space-x-2 transition-colors group', isLiked ? 'text-red-400' : 'text-slate-400 hover:text-red-400']">
-        <div :class="['p-1.5 rounded-full transition-colors', isLiked ? 'bg-red-400/10' : 'group-hover:bg-red-400/10']">
+    <div class="flex items-center space-x-6 pt-1 border-b border-slate-200 pb-3 mb-3">
+      <button @click="toggleLike" :class="['flex items-center space-x-2 transition-colors group', isLiked ? 'text-red-500' : 'text-slate-500 hover:text-red-500']">
+        <div :class="['p-1.5 rounded-full transition-colors', isLiked ? 'bg-red-500/10' : 'group-hover:bg-red-500/10']">
           <svg class="w-5 h-5" :fill="isLiked ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
@@ -187,8 +187,8 @@ const submitComment = async () => {
         <span class="text-xs font-semibold">{{ localLikes.length }}</span>
       </button>
 
-      <button @click="showComments = !showComments" :class="['flex items-center space-x-2 transition-colors group', showComments ? 'text-cyan-400' : 'text-slate-400 hover:text-cyan-400']">
-        <div :class="['p-1.5 rounded-full transition-colors', showComments ? 'bg-cyan-400/10' : 'group-hover:bg-cyan-400/10']">
+      <button @click="showComments = !showComments" :class="['flex items-center space-x-2 transition-colors group', showComments ? 'text-cyan-600' : 'text-slate-500 hover:text-cyan-600']">
+        <div :class="['p-1.5 rounded-full transition-colors', showComments ? 'bg-cyan-600/10' : 'group-hover:bg-cyan-600/10']">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
@@ -200,26 +200,26 @@ const submitComment = async () => {
     </div>
 
     <div v-if="!showComments && latestComment" class="animate-fade-in mt-1">
-      <span class="text-xs text-emerald-500 mb-1 block">Latest comment:</span>
-      <div class="bg-black/10 rounded-xl p-2.5 border border-white/5 text-xs flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-        <span class="font-semibold text-emerald-400 shrink-0">{{ latestComment.github_username }}</span>
-        <span class="text-slate-300 truncate">{{ latestComment.text }}</span>
+      <span class="text-xs text-emerald-600 mb-1 block">Latest comment:</span>
+      <div class="bg-slate-100 rounded-xl p-2.5 border border-slate-200/60 text-xs flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+        <span class="font-semibold text-emerald-700 shrink-0">{{ latestComment.github_username }}</span>
+        <span class="text-slate-700 truncate">{{ latestComment.text }}</span>
       </div>
-      <button v-if="localComments.length > 1" @click="showComments = true" class="text-[11px] text-slate-500 hover:text-slate-400 mb-2 font-medium transition-colors">
+      <button v-if="localComments.length > 1" @click="showComments = true" class="text-[11px] text-slate-500 hover:text-slate-700 mt-2 mb-2 font-medium transition-colors">
         Show all {{ localComments.length }} comments...
       </button>
     </div>
 
     <div v-if="showComments" class="space-y-3 mt-3 animate-fade-in">
       <div v-if="localComments.length > 0" class="max-h-48 overflow-y-auto space-y-2.5 pr-1">
-        <div v-for="comment in localComments" :key="comment.id" class="bg-black/20 rounded-xl p-2.5 border border-white/5 text-xs">
+        <div v-for="comment in localComments" :key="comment.id" class="bg-slate-100 rounded-xl p-2.5 border border-slate-200/60 text-xs">
           <div class="flex justify-between items-center mb-1">
-            <span class="font-semibold text-emerald-400">{{ comment.github_username }}</span>
+            <span class="font-semibold text-emerald-700">{{ comment.github_username }}</span>
             <span class="text-[10px] text-slate-500">
               {{ new Date(comment.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}
             </span>
           </div>
-          <p class="text-slate-300 leading-normal">{{ comment.text }}</p>
+          <p class="text-slate-700 leading-normal">{{ comment.text }}</p>
         </div>
       </div>
 
@@ -228,14 +228,14 @@ const submitComment = async () => {
           v-model="newCommentText"
           type="text"
           placeholder="Write a comment..."
-          class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+          class="flex-1 bg-slate-100 border border-slate-200/60 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/50"
           :disabled="isSubmittingComment"
         />
         <InteractiveSendButton
           type="submit"
           :text="isSubmittingComment ? 'Sending...' : 'Send'"
           :disabled="!newCommentText.trim() || isSubmittingComment"
-          class="bg-emerald-600 hover:bg-emerald-500 border-white/10 text-white font-semibold text-xs rounded-xl focus:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="bg-emerald-600 hover:bg-emerald-500 border-transparent text-white font-semibold text-xs rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </form>
     </div>
