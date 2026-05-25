@@ -38,7 +38,8 @@ Follow these instructions to get a local copy up and running. Perfect for teache
 2. Go to **Authentication > Providers** and enable **GitHub**.
    - You will need to create an OAuth App in your GitHub Developer Settings.
    - Set the Authorization callback URL to: `http://localhost:3000/auth/callback`
-3. Ensure your database tables are set up (Required tables: `profiles`, `events`, `comments`, `event_likes`, `follows`). 
+3. Ensure your database tables are set up (Required tables: `profiles`, `events`, `comments`, `event_likes`, `follows`). See database-schema/database-schema.sql for more details.
+
 
 ### 2. Clone and Install
 ```bash
