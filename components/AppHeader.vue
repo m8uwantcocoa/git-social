@@ -36,7 +36,7 @@ const triggerRefresh = () => {
           class="min-w-0 text-2xl font-bold text-lime-400 transition-colors hover:text-lime-300"
         >
           <h1 class="truncate text-lg font-extrabold tracking-tight text-white select-none sm:text-xl">
-            Git<span class="text-lime-400"> - </span>Social
+            𝒈𝒊𝒕<span class="text-lime-400"> - </span>𝒔𝒐𝒄𝒊𝒂𝒍
           </h1>
         </NuxtLink>
       </div>
