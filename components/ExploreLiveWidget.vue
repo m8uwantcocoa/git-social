@@ -317,7 +317,13 @@ const fetchLatestActivity = async () => {
              <span>{{ event.time }}</span>
           </div>
         <div class="text-[14px] leading-snug text-slate-900">
-          <span class="font-medium italic mr-1">{{ event.user }}</span> 
+          <NuxtLink
+            :to="`/users/${event.user}`"
+            class="font-medium italic mr-1 transition-colors hover:text-emerald-700"
+            :aria-label="`Open ${event.user} profile`"
+          >
+            {{ event.user }}
+          </NuxtLink>
           <span class="text-slate-600 mr-1">{{ event.description }}</span> 
           <span v-if="event.target" class="font-medium text-slate-800">
             {{ event.target }}

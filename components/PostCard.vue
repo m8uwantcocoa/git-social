@@ -221,7 +221,13 @@ const submitComment = async () => {
     <div v-if="!showComments && latestComment" class="animate-fade-in mt-1">
       <span class="text-xs text-emerald-600 mb-1 block">Latest comment:</span>
       <div class="bg-slate-100 rounded-xl p-2.5 border border-slate-200/60 text-xs flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-        <span class="font-semibold text-emerald-700 shrink-0">{{ latestComment.github_username }}</span>
+        <NuxtLink
+          :to="`/users/${latestComment.github_username}`"
+          class="font-semibold text-emerald-700 shrink-0 transition-colors hover:text-emerald-600"
+          :aria-label="`Open ${latestComment.github_username} profile`"
+        >
+          {{ latestComment.github_username }}
+        </NuxtLink>
         <span class="text-slate-700 truncate">{{ latestComment.text }}</span>
       </div>
       <button v-if="localComments.length > 1" @click="showComments = true" class="text-[11px] text-slate-500 hover:text-slate-700 mt-2 mb-2 font-medium transition-colors">
@@ -233,7 +239,13 @@ const submitComment = async () => {
       <div v-if="localComments.length > 0" class="max-h-48 overflow-y-auto space-y-2.5 pr-1">
         <div v-for="comment in localComments" :key="comment.id" class="bg-slate-100 rounded-xl p-2.5 border border-slate-200/60 text-xs">
           <div class="flex justify-between items-center mb-1">
-            <span class="font-semibold text-emerald-700">{{ comment.github_username }}</span>
+            <NuxtLink
+              :to="`/users/${comment.github_username}`"
+              class="font-semibold text-emerald-700 transition-colors hover:text-emerald-600"
+              :aria-label="`Open ${comment.github_username} profile`"
+            >
+              {{ comment.github_username }}
+            </NuxtLink>
             <span class="text-[10px] text-slate-500">
               {{ new Date(comment.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}
             </span>

@@ -75,38 +75,37 @@ const refreshProfile = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen overflow-x-hidden bg-mist-100 pt-[68px] font-sans text-slate-100 selection:bg-green-300/30">
+  <div class="min-h-screen overflow-x-hidden bg-mist-100 pt-[68px] font-sans text-slate-900 selection:bg-emerald-500/30">
     <AppHeader active-tab="global" @refresh="refreshProfile" />
     <AppSidebar class="hidden lg:block" />
 
     <main class="w-full px-3 pb-28 pt-4 sm:px-5 sm:pt-5 lg:ml-72 lg:w-[calc(100%-18rem)] lg:max-w-none lg:px-6 lg:pb-12 xl:mx-auto xl:w-full xl:max-w-4xl">
-      <section class="max-w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-green-950/90 via-slate-950 to-slate-950 shadow-2xl shadow-green-950/10 sm:rounded-[2rem]">
+      <section class="max-w-full overflow-hidden rounded-3xl border border-slate-200/60 bg-slate-50/80 shadow-sm backdrop-blur-sm sm:rounded-[2rem]">
         <div class="relative min-w-0">
-          <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-green-300/15 blur-3xl" />
-          <div class="pointer-events-none absolute left-1/3 top-32 h-40 w-40 rounded-full bg-lime-200/8 blur-3xl" />
-          <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-green-200/10 blur-3xl" />
+          <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-500/5 blur-3xl" />
+          <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-lime-400/5 blur-3xl" />
 
-          <div class="relative border-b border-white/10 px-4 py-5 sm:px-6 sm:py-7">
+          <div class="relative border-b border-slate-200/60 px-4 py-5 sm:px-6 sm:py-7">
             <div class="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div class="min-w-0 max-w-2xl">
-                <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-green-200/20 bg-green-200/10 px-3 py-1.5">
-                  <span class="h-2 w-2 shrink-0 rounded-full bg-green-200 shadow-[0_0_14px_rgba(187,247,208,0.65)]" />
-                  <span class="truncate text-[11px] font-black uppercase tracking-[0.22em] text-green-100">
+                <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5">
+                  <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                  <span class="truncate text-[11px] font-black uppercase tracking-[0.22em] text-emerald-700">
                     GitHub account
                   </span>
                 </div>
 
-                <h1 class="mt-4 break-words text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+                <h1 class="mt-4 break-words text-3xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
                   {{ pending ? 'Loading profile...' : githubData?.profile ? `@${githubData.profile.login}` : 'Profile' }}
                 </h1>
 
-                <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
+                <p class="mt-3 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
                   View your connected GitHub account, profile stats and repositories separately from the feed.
                 </p>
               </div>
 
               <button
-                class="inline-flex w-full shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-5 py-3 text-sm font-black text-white shadow-lg shadow-black/20 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                class="inline-flex w-full shrink-0 items-center justify-center rounded-2xl border border-transparent bg-emerald-600 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-500 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 :disabled="pending || refreshing"
                 @click="refreshProfile"
               >
@@ -121,12 +120,12 @@ const refreshProfile = async () => {
               v-if="pending"
               class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[290px_minmax(0,1fr)]"
             >
-              <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-5">
+              <div class="rounded-3xl border border-slate-200/60 bg-slate-100 p-5">
                 <div class="flex items-center gap-4">
-                  <div class="h-20 w-20 shrink-0 animate-pulse rounded-3xl bg-white/10" />
+                  <div class="h-20 w-20 shrink-0 animate-pulse rounded-3xl bg-slate-200" />
                   <div class="min-w-0 flex-1 space-y-3">
-                    <div class="h-5 w-40 max-w-full animate-pulse rounded-full bg-white/10" />
-                    <div class="h-4 w-24 max-w-full animate-pulse rounded-full bg-white/10" />
+                    <div class="h-5 w-40 max-w-full animate-pulse rounded-full bg-slate-200" />
+                    <div class="h-4 w-24 max-w-full animate-pulse rounded-full bg-slate-200" />
                   </div>
                 </div>
 
@@ -134,7 +133,7 @@ const refreshProfile = async () => {
                   <div
                     v-for="item in 3"
                     :key="item"
-                    class="h-20 animate-pulse rounded-2xl bg-white/10"
+                    class="h-20 animate-pulse rounded-2xl bg-slate-200"
                   />
                 </div>
               </div>
@@ -143,7 +142,7 @@ const refreshProfile = async () => {
                 <div
                   v-for="item in 6"
                   :key="item"
-                  class="h-36 animate-pulse rounded-3xl bg-white/10"
+                  class="h-36 animate-pulse rounded-3xl bg-slate-100"
                 />
               </div>
             </div>
@@ -153,20 +152,20 @@ const refreshProfile = async () => {
               class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[290px_minmax(0,1fr)]"
             >
               <aside class="min-w-0 space-y-5">
-                <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur">
+                <div class="rounded-3xl border border-slate-200/60 bg-white/70 p-5 shadow-sm backdrop-blur">
                   <div class="flex min-w-0 flex-col items-center text-center sm:flex-row sm:text-left xl:flex-col xl:text-center">
                     <img
                       :src="githubData.profile.avatar_url"
                       :alt="githubData.profile.login"
-                      class="h-20 w-20 shrink-0 rounded-3xl sm:h-24 sm:w-24 border border-white/10 bg-slate-800 object-cover shadow-xl shadow-black/30 md:h-20 md:w-20 xl:h-24 xl:w-24"
+                      class="h-20 w-20 shrink-0 rounded-3xl sm:h-24 sm:w-24 border border-slate-200 bg-slate-100 object-cover shadow-sm md:h-20 md:w-20 xl:h-24 xl:w-24"
                     >
 
                     <div class="mt-4 min-w-0 max-w-full sm:ml-4 sm:mt-0 xl:ml-0 xl:mt-5">
-                      <h2 class="truncate text-2xl font-black text-white">
+                      <h2 class="truncate text-2xl font-black text-slate-900">
                         {{ githubData.profile.name || githubData.profile.login }}
                       </h2>
 
-                      <p class="mt-1 truncate text-sm font-bold text-green-200">
+                      <p class="mt-1 truncate text-sm font-bold text-emerald-700">
                         @{{ githubData.profile.login }}
                       </p>
                     </div>
@@ -174,34 +173,34 @@ const refreshProfile = async () => {
 
                   <dl class="mt-6 grid grid-cols-3 gap-1 sm:gap-2">
                     <div
-                      class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      class="min-w-0 rounded-2xl border border-slate-200/60 bg-slate-100 px-1 py-3 text-center sm:px-2 sm:py-4">
                       <dt
-                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
+                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-500">
                         Repos
                       </dt>
-                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
+                      <dd class="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
                         {{ githubData.profile.public_repos }}
                       </dd>
                     </div>
 
                     <div
-                      class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      class="min-w-0 rounded-2xl border border-slate-200/60 bg-slate-100 px-1 py-3 text-center sm:px-2 sm:py-4">
                       <dt
-                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
+                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-500">
                         Followers
                       </dt>
-                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
+                      <dd class="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
                         {{ githubData.profile.followers }}
                       </dd>
                     </div>
 
                     <div
-                      class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      class="min-w-0 rounded-2xl border border-slate-200/60 bg-slate-100 px-1 py-3 text-center sm:px-2 sm:py-4">
                       <dt
-                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
+                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-500">
                         Following
                       </dt>
-                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
+                      <dd class="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
                         {{ githubData.profile.following }}
                       </dd>
                     </div>
@@ -212,12 +211,12 @@ const refreshProfile = async () => {
                   :href="githubData.profile.html_url"
                   target="_blank"
                   rel="noreferrer"
-                  class="block rounded-3xl border border-green-200/15 bg-green-200/10 p-5 transition hover:bg-green-200/15"
+                  class="block rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-5 transition hover:bg-emerald-500/15"
                 >
-                  <p class="text-sm font-black text-green-50">
+                  <p class="text-sm font-black text-emerald-800">
                     Open on GitHub
                   </p>
-                  <p class="mt-2 text-sm leading-6 text-green-50/70">
+                  <p class="mt-2 text-sm leading-6 text-emerald-700">
                     Jump to the full GitHub profile in a new tab.
                   </p>
                 </a>
@@ -226,15 +225,15 @@ const refreshProfile = async () => {
               <section class="min-w-0 overflow-hidden">
                 <div class="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div class="min-w-0">
-                    <h3 class="break-words text-2xl font-black text-white">
+                    <h3 class="break-words text-2xl font-black text-slate-900">
                       Repositories
                     </h3>
-                    <p class="mt-1 text-sm text-slate-400">
+                    <p class="mt-1 text-sm text-slate-500">
                       {{ githubData.repos.length }} repositories 
                     </p>
                   </div>
 
-                  <span class="w-fit shrink-0 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-black text-slate-200">
+                  <span class="w-fit shrink-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-black text-emerald-700">
                     GitHub repos
                   </span>
                 </div>
@@ -249,12 +248,12 @@ const refreshProfile = async () => {
                   <article
                     v-for="repo in visibleRepos"
                     :key="repo.id"
-                    class="group flex min-h-40 min-w-0 flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.055] p-4 shadow-lg shadow-black/10 backdrop-blur transition hover:-translate-y-1 hover:border-green-200/35 hover:bg-white/[0.08]"
+                    class="group flex min-h-40 min-w-0 flex-col justify-between rounded-3xl border border-slate-200/60 bg-slate-100 p-4 shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:bg-white"
                   >
                     <div class="min-w-0">
                       <div class="flex min-w-0 items-start justify-between gap-3">
                         <div class="min-w-0">
-                          <h4 class="break-words text-sm font-black text-white sm:truncate">
+                          <h4 class="break-words text-sm font-black text-slate-900 sm:truncate">
                             {{ repo.full_name }}
                           </h4>
                         </div>
@@ -262,24 +261,24 @@ const refreshProfile = async () => {
                         <span
                           class="shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-black"
                           :class="repo.private
-                            ? 'border-amber-300/20 bg-amber-400/10 text-amber-200'
-                            : 'border-green-200/20 bg-green-200/10 text-green-100'"
+                            ? 'border-amber-500/40 bg-amber-100 text-amber-800'
+                            : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700'"
                         >
                           {{ repo.private ? 'Private' : 'Public' }}
                         </span>
                       </div>
 
-                      <p class="mt-3 line-clamp-3 break-words text-xs leading-5 text-slate-400">
+                      <p class="mt-3 line-clamp-3 break-words text-xs leading-5 text-slate-600">
                         {{ repo.description || 'No description' }}
                       </p>
                     </div>
 
-                    <div class="mt-5 flex min-w-0 items-center justify-between gap-3 border-t border-white/10 pt-3 text-[11px] font-bold text-slate-400">
+                    <div class="mt-5 flex min-w-0 items-center justify-between gap-3 border-t border-slate-200/60 pt-3 text-[11px] font-bold text-slate-500">
                       <span class="min-w-0 truncate">
                         {{ repo.default_branch }}
                       </span>
 
-                      <span class="shrink-0 text-slate-300">
+                      <span class="shrink-0 text-slate-600">
                         ★ {{ repo.stargazers_count }}
                       </span>
                     </div>
@@ -291,7 +290,7 @@ const refreshProfile = async () => {
                   class="mt-5 flex justify-center"
                 >
                   <button
-                    class="inline-flex items-center justify-center rounded-full border border-green-200/20 bg-green-200/10 px-5 py-2.5 text-xs font-black text-green-50 transition hover:-translate-y-0.5 hover:bg-green-200/15 active:translate-y-0"
+                    class="inline-flex items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-5 py-2.5 text-xs font-black text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-500/15 active:translate-y-0"
                     type="button"
                     @click="showAllRepos = !showAllRepos"
                   >
@@ -301,13 +300,13 @@ const refreshProfile = async () => {
 
                 <div
                   v-if="!githubData.repos.length"
-                  class="rounded-3xl border border-dashed border-white/10 bg-white/[0.04] px-5 py-12 text-center"
+                  class="rounded-3xl border border-dashed border-slate-200/80 bg-slate-100 px-5 py-12 text-center"
                 >
-                  <p class="text-base font-black text-white">
+                  <p class="text-base font-black text-slate-900">
                     No repositories found
                   </p>
 
-                  <p class="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-400">
+                  <p class="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
                     Your GitHub profile was loaded, but no repositories were returned.
                   </p>
                 </div>
@@ -316,22 +315,22 @@ const refreshProfile = async () => {
 
             <div
               v-else
-              class="mx-auto max-w-lg rounded-3xl border border-dashed border-white/10 bg-white/[0.05] px-5 py-10 text-center sm:px-8"
+              class="mx-auto max-w-lg rounded-3xl border border-dashed border-slate-200/80 bg-slate-100 px-5 py-10 text-center sm:px-8"
             >
-              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/10 text-2xl font-black text-white">
+              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border border-slate-200 bg-white text-2xl font-black text-slate-900">
                 ?
               </div>
 
-              <h2 class="mt-5 text-xl font-black text-white">
+              <h2 class="mt-5 text-xl font-black text-slate-900">
                 No GitHub profile data available
               </h2>
 
-              <p class="mt-3 text-sm leading-6 text-slate-400">
+              <p class="mt-3 text-sm leading-6 text-slate-500">
                 Sign out and sign in again if the GitHub provider token was not captured.
               </p>
 
               <button
-                class="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-green-200/20 bg-green-200/10 px-5 py-3 text-sm font-black text-green-50 transition hover:bg-green-200/15 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                class="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-3 text-sm font-black text-emerald-700 transition hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 :disabled="refreshing"
                 @click="refreshProfile"
               >
@@ -362,16 +361,16 @@ const refreshProfile = async () => {
 }
 
 .repo-scroll-grid::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 0.12);
+  background: rgb(15 23 42 / 0.14);
   border-radius: 999px;
 }
 
 .repo-scroll-grid::-webkit-scrollbar-thumb:hover {
-  background: rgb(255 255 255 / 0.18);
+  background: rgb(15 23 42 / 0.22);
 }
 
 .repo-scroll-grid {
-  scrollbar-color: rgb(255 255 255 / 0.12) transparent;
+  scrollbar-color: rgb(15 23 42 / 0.14) transparent;
   scrollbar-width: thin;
 }
 </style>
