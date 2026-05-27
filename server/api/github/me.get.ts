@@ -13,8 +13,8 @@ const githubApiHeaders = (token: string) => ({
 })
 
 export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
-  let user = await serverSupabaseUser(event)
-  let supabase = await serverSupabaseClient(event)
+  let user: any = await serverSupabaseUser(event)
+  let supabase: any = await serverSupabaseClient(event)
 
   if (!user || !user.id) {
     const authHeader = getHeader(event, 'Authorization')

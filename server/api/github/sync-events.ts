@@ -20,7 +20,9 @@ export default defineEventHandler(async (event) => {
       .not('github_username', 'is', null)
 
     if (profileError || !profiles) return { success: false, error: 'Kunde inte hämta profiler' }
-    usernamesToSync = profiles.map(p => p.github_username)
+    usernamesToSync = profiles
+      .map((p) => p.github_username)
+      .filter((username): username is string => Boolean(username))
   }
 
   const syncPromises = usernamesToSync.map(async (username: string) => {

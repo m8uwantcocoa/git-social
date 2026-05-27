@@ -2,7 +2,11 @@ import { serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const username = query.username
+  const username = String(query.username || '')
+
+  if (!username) {
+    throw createError({ statusCode: 400, statusMessage: 'Missing username' })
+  }
   
   const supabase = await serverSupabaseClient(event)
 
