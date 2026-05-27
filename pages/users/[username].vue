@@ -3,12 +3,40 @@ definePageMeta({
   middleware: 'auth'
 })
 
+type GitHubProfile = {
+  avatar_url: string
+  bio?: string | null
+  followers: number
+  following: number
+  html_url: string
+  login: string
+  name?: string | null
+  public_repos: number
+}
+
+type GitHubRepo = {
+  id: number
+  default_branch?: string
+  description?: string | null
+  full_name: string
+  html_url: string
+  language?: string | null
+  private: boolean
+  stargazers_count?: number
+  updated_at?: string
+}
+
+type GitHubProfileData = {
+  profile: GitHubProfile | null
+  repos: GitHubRepo[]
+}
+
 const route = useRoute()
 const username = computed(() => String(route.params.username || ''))
 
 const { data: githubData, pending, refresh, error } = await useAsyncData(
   () => `github-user-profile-${username.value}`,
-  () => $fetch(`/api/github/users/${username.value}`),
+  () => $fetch<GitHubProfileData>(`/api/github/users/${username.value}`),
   {
     watch: [username],
     default: () => ({ profile: null, repos: [] })

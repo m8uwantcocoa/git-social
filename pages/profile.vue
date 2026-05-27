@@ -3,6 +3,34 @@ definePageMeta({
   middleware: 'auth'
 })
 
+type GitHubProfile = {
+  avatar_url: string
+  bio?: string | null
+  followers: number
+  following: number
+  html_url: string
+  login: string
+  name?: string | null
+  public_repos: number
+}
+
+type GitHubRepo = {
+  id: number
+  default_branch?: string
+  description?: string | null
+  full_name: string
+  html_url: string
+  language?: string | null
+  private: boolean
+  stargazers_count?: number
+  updated_at?: string
+}
+
+type GitHubProfileData = {
+  profile: GitHubProfile | null
+  repos: GitHubRepo[]
+}
+
 const supabase = useSupabaseClient()
 
 const { data: githubData, pending, refresh } = await useAsyncData('github-profile', async () => {
@@ -17,9 +45,9 @@ const { data: githubData, pending, refresh } = await useAsyncData('github-profil
     })
   }
 
-  const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
+  const headers: HeadersInit = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
 
-  return await $fetch('/api/github/me', { headers })
+  return await $fetch<GitHubProfileData>('/api/github/me', { headers })
 }, {
   default: () => ({ profile: null, repos: [] })
 })
