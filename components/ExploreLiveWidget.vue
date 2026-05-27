@@ -1,8 +1,15 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
+type WeatherResponse = {
+  city?: string
+  condition?: string
+  temp?: number
+  error?: boolean
+}
+
 const isFollowingExpanded = ref(false)
-const supabase = useSupabaseClient()
+const supabase = useSupabaseClient<any>()
 const currentUser = useSupabaseUser()
 
 const currentTime = ref('')
@@ -28,7 +35,7 @@ const fetchWeatherFromApi = async (lat: number, lon: number) => {
       }
     }
 
-    const data = await $fetch(`/api/weather/weather?lat=${lat}&lon=${lon}`)
+    const data = await $fetch<WeatherResponse>(`/api/weather/weather?lat=${lat}&lon=${lon}`)
     
     if (data.error) {
       locationData.value.condition = 'Could not fetch'
@@ -36,9 +43,9 @@ const fetchWeatherFromApi = async (lat: number, lon: number) => {
     }
 
     locationData.value = {
-      city: data.city,
-      condition: data.condition,
-      temp: data.temp
+      city: data.city ?? 'Unknown location',
+      condition: data.condition ?? 'Unknown weather',
+      temp: data.temp !== undefined ? String(data.temp) : '--'
     }
 
     localStorage.setItem(cacheKey, JSON.stringify({
