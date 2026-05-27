@@ -281,10 +281,14 @@ const fetchLatestActivity = async () => {
           :key="username" 
           class="px-4 py-2 hover:bg-slate-100 transition-colors flex justify-between items-center group"
         >
-          <div class="flex items-center gap-2.5 overflow-hidden">
+          <NuxtLink
+            :to="`/users/${username}`"
+            class="flex min-w-0 items-center gap-2.5 overflow-hidden rounded-lg transition-colors hover:text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+            :aria-label="`Open ${username} profile`"
+          >
             <img :src="`https://github.com/${username}.png`" class="w-7 h-7 rounded-full bg-slate-200 shrink-0 border border-slate-200" alt="avatar" />
             <span class="text-[12px] font-semibold text-slate-800 truncate">@{{ username }}</span>
-          </div>
+          </NuxtLink>
           <button @click="toggleFollow(username)" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1" title="Unfollow">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
