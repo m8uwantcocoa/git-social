@@ -44,6 +44,15 @@ const { data: githubData, pending, refresh, error } = await useAsyncData(
 )
 
 const refreshing = ref(false)
+const showAllRepos = ref(false)
+
+const visibleRepos = computed(() => {
+  const repos = githubData.value?.repos || []
+
+  return showAllRepos.value ? repos : repos.slice(0, 4)
+})
+
+const hasMoreRepos = computed(() => (githubData.value?.repos?.length || 0) > 4)
 
 const refreshProfile = async () => {
   refreshing.value = true
@@ -57,25 +66,23 @@ const refreshProfile = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen overflow-x-hidden bg-mist-100 font-sans text-slate-100 selection:bg-emerald-500/30">
-    <AppHeader
-      active-tab="global"
-      @refresh="refreshProfile"
-    />
+  <div class="min-h-screen overflow-x-hidden bg-mist-100 pt-[68px] font-sans text-slate-100 selection:bg-green-300/30">
+    <AppHeader active-tab="global" @refresh="refreshProfile" />
+    <AppSidebar class="hidden lg:block" />
 
-    <main class="mx-auto w-full max-w-7xl px-3 pb-28 pt-4 sm:px-6 sm:pt-5 lg:px-8 lg:pb-12">
-      <section class="max-w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-950 via-slate-950 to-black shadow-2xl shadow-emerald-950/20 sm:rounded-[2rem]">
+    <main class="w-full px-3 pb-28 pt-4 sm:px-5 sm:pt-5 lg:ml-72 lg:w-[calc(100%-18rem)] lg:max-w-none lg:px-6 lg:pb-12 xl:mx-auto xl:w-full xl:max-w-4xl">
+      <section class="max-w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-green-950/90 via-slate-950 to-slate-950 shadow-2xl shadow-green-950/10 sm:rounded-[2rem]">
         <div class="relative min-w-0">
-          <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
-          <div class="pointer-events-none absolute left-1/3 top-32 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
-          <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-teal-400/10 blur-3xl" />
+          <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-green-300/15 blur-3xl" />
+          <div class="pointer-events-none absolute left-1/3 top-32 h-40 w-40 rounded-full bg-lime-200/8 blur-3xl" />
+          <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-green-200/10 blur-3xl" />
 
-          <div class="relative border-b border-white/10 px-4 py-6 sm:px-8 sm:py-8 lg:px-10">
+          <div class="relative border-b border-white/10 px-4 py-5 sm:px-6 sm:py-7">
             <div class="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div class="min-w-0 max-w-2xl">
-                <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5">
-                  <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.9)]" />
-                  <span class="truncate text-[11px] font-black uppercase tracking-[0.22em] text-emerald-200">
+                <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-green-200/20 bg-green-200/10 px-3 py-1.5">
+                  <span class="h-2 w-2 shrink-0 rounded-full bg-green-200 shadow-[0_0_14px_rgba(187,247,208,0.65)]" />
+                  <span class="truncate text-[11px] font-black uppercase tracking-[0.22em] text-green-100">
                     GitHub account
                   </span>
                 </div>
@@ -100,10 +107,10 @@ const refreshProfile = async () => {
             </div>
           </div>
 
-          <div class="relative p-4 sm:p-8 lg:p-10">
+          <div class="relative p-4 sm:p-6">
             <div
               v-if="pending"
-              class="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[360px_minmax(0,1fr)]"
+              class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[290px_minmax(0,1fr)]"
             >
               <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-5">
                 <div class="flex items-center gap-4">
@@ -114,7 +121,7 @@ const refreshProfile = async () => {
                   </div>
                 </div>
 
-                <div class="mt-6 grid grid-cols-1 gap-3 min-[380px]:grid-cols-3">
+                <div class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
                   <div
                     v-for="item in 3"
                     :key="item"
@@ -134,52 +141,52 @@ const refreshProfile = async () => {
 
             <div
               v-else-if="githubData?.profile"
-              class="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[400px_minmax(0,1fr)]"
+              class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[290px_minmax(0,1fr)]"
             >
               <aside class="min-w-0 space-y-5">
-                <div class="rounded-3xl border border-white/10 bg-white/[0.07] p-5 shadow-xl shadow-black/20 backdrop-blur">
-                  <div class="flex min-w-0 flex-col items-center text-center sm:flex-row sm:text-left lg:flex-col lg:text-center">
+                <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur">
+                  <div class="flex min-w-0 flex-col items-center text-center sm:flex-row sm:text-left xl:flex-col xl:text-center">
                     <img
                       :src="githubData.profile.avatar_url"
                       :alt="githubData.profile.login"
-                      class="h-24 w-24 shrink-0 rounded-3xl border border-white/10 bg-slate-800 object-cover shadow-xl shadow-black/30 sm:h-20 sm:w-20 lg:h-28 lg:w-28"
+                      class="h-20 w-20 shrink-0 rounded-3xl sm:h-24 sm:w-24 border border-white/10 bg-slate-800 object-cover shadow-xl shadow-black/30 md:h-20 md:w-20 xl:h-24 xl:w-24"
                     >
 
-                    <div class="mt-4 min-w-0 max-w-full sm:ml-4 sm:mt-0 lg:ml-0 lg:mt-5">
+                    <div class="mt-4 min-w-0 max-w-full sm:ml-4 sm:mt-0 xl:ml-0 xl:mt-5">
                       <h2 class="truncate text-2xl font-black text-white">
                         {{ githubData.profile.name || githubData.profile.login }}
                       </h2>
 
-                      <p class="mt-1 truncate text-sm font-bold text-emerald-300">
+                      <p class="mt-1 truncate text-sm font-bold text-green-200">
                         @{{ githubData.profile.login }}
                       </p>
                     </div>
                   </div>
 
-                  <dl class="mt-6 grid grid-cols-1 gap-3 min-[380px]:grid-cols-3">
-                    <div class="rounded-2xl border border-white/10 bg-black/20 px-3 py-4 text-center">
-                      <dt class="text-[10px] font-black uppercase tracking-wide text-slate-400">
+                  <dl class="mt-6 grid grid-cols-3 gap-1 sm:gap-2">
+                    <div class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      <dt class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
                         Repos
                       </dt>
-                      <dd class="mt-1 text-2xl font-black text-white">
+                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
                         {{ githubData.profile.public_repos }}
                       </dd>
                     </div>
 
-                    <div class="rounded-2xl border border-white/10 bg-black/20 px-3 py-4 text-center">
-                      <dt class="text-[10px] font-black uppercase tracking-wide text-slate-400">
+                    <div class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      <dt class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
                         Followers
                       </dt>
-                      <dd class="mt-1 text-2xl font-black text-white">
+                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
                         {{ githubData.profile.followers }}
                       </dd>
                     </div>
 
-                    <div class="rounded-2xl border border-white/10 bg-black/20 px-3 py-4 text-center">
-                      <dt class="text-[10px] font-black uppercase tracking-wide text-slate-400">
+                    <div class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      <dt class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
                         Following
                       </dt>
-                      <dd class="mt-1 text-2xl font-black text-white">
+                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
                         {{ githubData.profile.following }}
                       </dd>
                     </div>
@@ -190,12 +197,12 @@ const refreshProfile = async () => {
                   :href="githubData.profile.html_url"
                   target="_blank"
                   rel="noreferrer"
-                  class="block rounded-3xl border border-emerald-300/15 bg-emerald-300/10 p-5 transition hover:bg-emerald-300/15"
+                  class="block rounded-3xl border border-green-200/15 bg-green-200/10 p-5 transition hover:bg-green-200/15"
                 >
-                  <p class="text-sm font-black text-emerald-100">
+                  <p class="text-sm font-black text-green-50">
                     Open on GitHub
                   </p>
-                  <p class="mt-2 text-sm leading-6 text-emerald-100/70">
+                  <p class="mt-2 text-sm leading-6 text-green-50/70">
                     Jump to the full GitHub profile in a new tab.
                   </p>
                 </a>
@@ -208,23 +215,26 @@ const refreshProfile = async () => {
                       Repositories
                     </h3>
                     <p class="mt-1 text-sm text-slate-400">
-                      {{ githubData.repos.length }} repositories loaded
+                      {{ githubData.repos.length }} repositories
                     </p>
                   </div>
 
                   <span class="w-fit shrink-0 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-black text-slate-200">
-                    Public repos
+                    GitHub repos
                   </span>
                 </div>
 
                 <div
                   v-if="githubData.repos.length"
-                  class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3"
+                  :class="[
+                    'repo-scroll-grid grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2',
+                    showAllRepos ? 'max-h-[32rem] overflow-y-auto pr-1' : ''
+                  ]"
                 >
                   <article
-                    v-for="repo in githubData.repos"
+                    v-for="repo in visibleRepos"
                     :key="repo.id"
-                    class="group flex min-h-40 min-w-0 flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.06] p-4 shadow-lg shadow-black/10 backdrop-blur transition hover:-translate-y-1 hover:border-emerald-300/30 hover:bg-white/[0.09]"
+                    class="group flex min-h-40 min-w-0 flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.055] p-4 shadow-lg shadow-black/10 backdrop-blur transition hover:-translate-y-1 hover:border-green-200/35 hover:bg-white/[0.08]"
                   >
                     <div class="min-w-0">
                       <div class="flex min-w-0 items-start justify-between gap-3">
@@ -238,7 +248,7 @@ const refreshProfile = async () => {
                           class="shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-black"
                           :class="repo.private
                             ? 'border-amber-300/20 bg-amber-400/10 text-amber-200'
-                            : 'border-emerald-300/20 bg-emerald-400/10 text-emerald-200'"
+                            : 'border-green-200/20 bg-green-200/10 text-green-100'"
                         >
                           {{ repo.private ? 'Private' : 'Public' }}
                         </span>
@@ -262,7 +272,20 @@ const refreshProfile = async () => {
                 </div>
 
                 <div
-                  v-else
+                  v-if="githubData.repos.length && hasMoreRepos"
+                  class="mt-5 flex justify-center"
+                >
+                  <button
+                    class="inline-flex items-center justify-center rounded-full border border-green-200/20 bg-green-200/10 px-5 py-2.5 text-xs font-black text-green-50 transition hover:-translate-y-0.5 hover:bg-green-200/15 active:translate-y-0"
+                    type="button"
+                    @click="showAllRepos = !showAllRepos"
+                  >
+                    {{ showAllRepos ? 'Show less' : `See more (${githubData.repos.length - 4})` }}
+                  </button>
+                </div>
+
+                <div
+                  v-if="!githubData.repos.length"
                   class="rounded-3xl border border-dashed border-white/10 bg-white/[0.04] px-5 py-12 text-center"
                 >
                   <p class="text-base font-black text-white">
@@ -293,7 +316,7 @@ const refreshProfile = async () => {
               </p>
 
               <button
-                class="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-5 py-3 text-sm font-black text-emerald-100 transition hover:bg-emerald-400/20 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                class="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-green-200/20 bg-green-200/10 px-5 py-3 text-sm font-black text-green-50 transition hover:bg-green-200/15 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 :disabled="refreshing"
                 @click="refreshProfile"
               >
@@ -304,8 +327,36 @@ const refreshProfile = async () => {
           </div>
         </div>
       </section>
-
-      <AppDock />
     </main>
+
+    <AppDock />
   </div>
 </template>
+
+<style scoped>
+.repo-scroll-grid {
+  scrollbar-gutter: stable;
+}
+
+.repo-scroll-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.repo-scroll-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.repo-scroll-grid::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+}
+
+.repo-scroll-grid::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 0.18);
+}
+
+.repo-scroll-grid {
+  scrollbar-color: rgb(255 255 255 / 0.12) transparent;
+  scrollbar-width: thin;
+}
+</style>

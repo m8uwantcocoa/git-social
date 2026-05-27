@@ -97,7 +97,7 @@ const refreshProfile = async () => {
                 </div>
 
                 <h1 class="mt-4 break-words text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
-                  Profile
+                  {{ pending ? 'Loading profile...' : githubData?.profile ? `@${githubData.profile.login}` : 'Profile' }}
                 </h1>
 
                 <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
@@ -119,7 +119,7 @@ const refreshProfile = async () => {
           <div class="relative p-4 sm:p-6">
             <div
               v-if="pending"
-              class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[230px_minmax(0,1fr)]"
+              class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[290px_minmax(0,1fr)]"
             >
               <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-5">
                 <div class="flex items-center gap-4">
@@ -150,7 +150,7 @@ const refreshProfile = async () => {
 
             <div
               v-else-if="githubData?.profile"
-              class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[230px_minmax(0,1fr)]"
+              class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[290px_minmax(0,1fr)]"
             >
               <aside class="min-w-0 space-y-5">
                 <div class="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur">
@@ -172,8 +172,17 @@ const refreshProfile = async () => {
                     </div>
                   </div>
 
-                  <dl class="mt-6 grid grid-cols-2 gap-1 sm:gap-2">
-
+                  <dl class="mt-6 grid grid-cols-3 gap-1 sm:gap-2">
+                    <div
+                      class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
+                      <dt
+                        class="break-words text-[9px] font-black uppercase leading-tight tracking-normal text-slate-400">
+                        Repos
+                      </dt>
+                      <dd class="mt-1 text-xl font-black text-white sm:text-2xl">
+                        {{ githubData.profile.public_repos }}
+                      </dd>
+                    </div>
 
                     <div
                       class="min-w-0 rounded-2xl border border-white/10 bg-black/20 px-1 py-3 text-center sm:px-2 sm:py-4">
@@ -199,14 +208,19 @@ const refreshProfile = async () => {
                   </dl>
                 </div>
 
-                <div class="rounded-3xl border border-green-200/15 bg-green-200/10 p-5">
+                <a
+                  :href="githubData.profile.html_url"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="block rounded-3xl border border-green-200/15 bg-green-200/10 p-5 transition hover:bg-green-200/15"
+                >
                   <p class="text-sm font-black text-green-50">
-                    Connected with GitHub
+                    Open on GitHub
                   </p>
                   <p class="mt-2 text-sm leading-6 text-green-50/70">
-                    Your account data is loaded through your saved GitHub provider token.
+                    Jump to the full GitHub profile in a new tab.
                   </p>
-                </div>
+                </a>
               </aside>
 
               <section class="min-w-0 overflow-hidden">
@@ -227,7 +241,10 @@ const refreshProfile = async () => {
 
                 <div
                   v-if="githubData.repos.length"
-                  class="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2"
+                  :class="[
+                    'repo-scroll-grid grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2',
+                    showAllRepos ? 'max-h-[32rem] overflow-y-auto pr-1' : ''
+                  ]"
                 >
                   <article
                     v-for="repo in visibleRepos"
@@ -330,3 +347,31 @@ const refreshProfile = async () => {
     <AppDock />
   </div>
 </template>
+
+<style scoped>
+.repo-scroll-grid {
+  scrollbar-gutter: stable;
+}
+
+.repo-scroll-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.repo-scroll-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.repo-scroll-grid::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+}
+
+.repo-scroll-grid::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 0.18);
+}
+
+.repo-scroll-grid {
+  scrollbar-color: rgb(255 255 255 / 0.12) transparent;
+  scrollbar-width: thin;
+}
+</style>
