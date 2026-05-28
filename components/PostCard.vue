@@ -149,52 +149,54 @@ const submitComment = async () => {
 </script>
 
 <template>
-<div class="bg-slate-50/80 shadow-sm backdrop-blur-sm rounded-3xl p-5 border border-slate-200/60 hover:border-slate-300 hover:shadow-md transition-all">
-      <div class="mb-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
-        <div class="flex min-w-0 items-center space-x-3">
-          <NuxtLink
-            :to="`/users/${post.github_username}`"
-            class="block shrink-0 transition-transform hover:scale-105"
-            :aria-label="`Open ${post.github_username} profile`"
-          >
-            <img
-              :src="post.avatar_url || 'https://github.com/github.png'"
-              class="h-10 w-10 rounded-full border border-slate-200 bg-slate-100 object-cover"
-              alt="Avatar"
-            />
-          </NuxtLink>
+  <div class="bg-slate-50/80 shadow-sm backdrop-blur-sm rounded-3xl p-5 border border-slate-200/60 hover:border-slate-300 hover:shadow-md transition-all">
+    
+    <div class="mb-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between flex-wrap">
+      
+      <div class="flex min-w-0 items-center space-x-3">
+        <NuxtLink
+          :to="`/users/${post.github_username}`"
+          class="block shrink-0 transition-transform hover:scale-105"
+          :aria-label="`Open ${post.github_username} profile`"
+        >
+          <img
+            :src="post.avatar_url || 'https://github.com/github.png'"
+            class="h-10 w-10 rounded-full border border-slate-200 bg-slate-100 object-cover"
+            alt="Avatar"
+          />
+        </NuxtLink>
 
-          <div class="min-w-0 leading-tight">
-            <h3 class="truncate text-sm font-semibold text-slate-800">
-              <NuxtLink
-                :to="`/users/${post.github_username}`"
-                class="transition-colors hover:text-emerald-600"
-              >
-                {{ post.github_username }}
-              </NuxtLink>
-            </h3>
+        <div class="min-w-0 leading-tight">
+          <h3 class="truncate text-sm font-semibold text-slate-800">
+            <NuxtLink
+              :to="`/users/${post.github_username}`"
+              class="transition-colors hover:text-emerald-600"
+            >
+              {{ post.github_username }}
+            </NuxtLink>
+          </h3>
 
-            <span class="mt-0.5 block truncate text-[11px] font-medium uppercase tracking-wide text-slate-500">
-              {{ new Date(post.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) }} •
-              {{ new Date(post.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) }}
-            </span>
-          </div>
-        </div>
-
-        <div class="inline-flex min-w-0 shrink-0 max-w-full items-center space-x-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5 text-emerald-700 sm:max-w-[50%]">
-          <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span class="shrink-0 font-mono text-[11px] font-semibold uppercase tracking-tight">{{ post.event_type }} - </span>
-          <span class="truncate font-mono text-[11px] font-medium tracking-tight">{{ post.repo_name }}</span>
+          <span class="mt-0.5 block truncate text-[11px] font-medium uppercase tracking-wide text-slate-500">
+            {{ new Date(post.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'numeric' }) }} •
+            {{ new Date(post.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) }}
+          </span>
         </div>
       </div>
 
-      <div class="mb-5">
-        <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
-          {{ post.message || generatedMessage }}
-        </p>
+      <div class="inline-flex min-w-0 shrink-0 max-w-full items-center space-x-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5 text-emerald-700 sm:max-w-[70%] min-[1024px]:max-[1184px]:flex min-[1024px]:max-[1184px]:w-full min-[1024px]:max-[1184px]:max-w-full min-[1024px]:max-[1184px]:mt-2">
+        <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="shrink-0 font-mono text-[11px] font-semibold uppercase tracking-tight">{{ post.event_type }} - </span>
+        <span class="truncate font-mono text-[11px] font-medium tracking-tight">{{ post.repo_name }}</span>
       </div>
+    </div>
+
+    <div class="mb-5">
+      <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+        {{ post.message || generatedMessage }}
+      </p>
+    </div>
 
     <div class="flex items-center space-x-6 pt-1 border-b border-slate-200 pb-3 mb-3">
       <button @click="toggleLike" :class="['flex items-center space-x-2 transition-colors group', isLiked ? 'text-red-500' : 'text-slate-500 hover:text-red-500']">
