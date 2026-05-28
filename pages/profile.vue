@@ -88,12 +88,7 @@ const refreshProfile = async () => {
           <div class="relative border-b border-slate-200/60 px-4 py-5 sm:px-6 sm:py-7">
             <div class="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div class="min-w-0 max-w-2xl">
-                <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5">
-                  <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-                  <span class="truncate text-[11px] font-black uppercase tracking-[0.22em] text-emerald-700">
-                    GitHub account
-                  </span>
-                </div>
+                
 
                 <h1 class="mt-4 break-words text-3xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
                   {{ pending ? 'Loading profile...' : githubData?.profile ? `@${githubData.profile.login}` : 'Profile' }}
