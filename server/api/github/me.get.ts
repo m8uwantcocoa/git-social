@@ -6,12 +6,14 @@ interface GitHubProfileData {
   repos: any[]
 }
 
+// Helper function to construct the necessary headers for GitHub API requests using the provider token.
 const githubApiHeaders = (token: string) => ({
   Authorization: `Bearer ${token}`,
   Accept: 'application/vnd.github+json',
   'X-GitHub-Api-Version': '2022-11-28'
 })
 
+// This API route fetches the authenticated user's GitHub profile and repositories using the provider token stored in an HTTP-only cookie. It also syncs the GitHub profile data with a Supabase database.
 export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
   let user: any = await serverSupabaseUser(event)
   let supabase: any = await serverSupabaseClient(event)
@@ -57,6 +59,7 @@ export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
     }
   }
 
+  // Fetch the user's GitHub profile and repositories in parallel using the provider token for authentication. Then, upsert the profile data into the Supabase database to keep it in sync.
   try {
     const [profile, repos] = await Promise.all([
       $fetch<any>('https://api.github.com/user', {
@@ -71,6 +74,7 @@ export default defineEventHandler(async (event): Promise<GitHubProfileData> => {
       })
     ])
 
+    // Upsert the GitHub profile data into the Supabase database to keep it in sync with the latest information from GitHub.
     const { error: dbError } = await supabase
       .from('profiles')
       .upsert({

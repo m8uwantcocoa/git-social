@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
   }
 
-  // On the first loadask Supabase for the current user before deciding whether to block the route.
+  // If the user is not already loaded, try to fetch the user from Supabase.
   if (!user.value && import.meta.client) {
     const { data } = await supabase.auth.getUser()
 

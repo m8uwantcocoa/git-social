@@ -3,6 +3,7 @@ interface GitHubUserProfileData {
   repos: any[]
 }
 
+// This API route fetches a GitHub user's profile and repos using a provider token from cookies or environment variables.
 const githubApiHeaders = (token?: string) => {
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github+json',
@@ -16,6 +17,7 @@ const githubApiHeaders = (token?: string) => {
   return headers
 }
 
+// This API route retrieves a GitHub user's profile and repositories using a provider token from cookies or environment variables for authentication.
 export default defineEventHandler(async (event): Promise<GitHubUserProfileData> => {
   const username = getRouterParam(event, 'username')
   const providerToken = getCookie(event, 'github_provider_token') || process.env.GITHUB_TOKEN
@@ -27,6 +29,7 @@ export default defineEventHandler(async (event): Promise<GitHubUserProfileData> 
     })
   }
 
+  // If no provider token is available, we cannot authenticate with the GitHub API, so we return null data instead of throwing an error.
   try {
     const [profile, repos] = await Promise.all([
       $fetch<any>(`https://api.github.com/users/${username}`, {

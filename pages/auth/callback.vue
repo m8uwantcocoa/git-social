@@ -1,14 +1,19 @@
+// This page handles the callback from GitHub after the user has authenticated.
+// It listens for changes in the authentication state and redirects the user to the app once they are signed in. 
+// It also syncs the GitHub token and profile information with the backend before redirecting.
 <script setup lang="ts">
 const supabase = useSupabaseClient()
 const status = ref('Finishing sign-in...')
 const errorMessage = ref('')
 let hasSynced = false
 
+// Redirect the user to the app after successful sign-in.
 const redirectToApp = () => {
   localStorage.setItem('show_welcome_confetti', 'true')
   window.location.replace('/')
 }
 
+// Sync the GitHub token and profile information with the backend.
 const syncGitHubToken = async (session: any) => {
   if (hasSynced) return
   hasSynced = true
@@ -17,7 +22,7 @@ const syncGitHubToken = async (session: any) => {
     const providerToken = session?.provider_token
     const accessToken = session?.access_token
 
-    // Spara GitHub-token
+    // Save the GitHub provider token in the backend to use for authenticated API requests.
     await $fetch('/api/github/session', {
       method: 'POST',
       body: { providerToken: providerToken || null }
@@ -25,7 +30,7 @@ const syncGitHubToken = async (session: any) => {
     
     await new Promise(resolve => setTimeout(resolve, 800))
 
-    // Synka profilen 
+    // Sync the user's profile information
     if (accessToken) {
       await $fetch('/api/github/me', {
         headers: {
@@ -39,6 +44,7 @@ const syncGitHubToken = async (session: any) => {
   }
 }
 
+// Listen for changes in the authentication state and handle the sign-in process.
 onMounted(() => {
   const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
     if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
@@ -48,6 +54,7 @@ onMounted(() => {
     }
   })
 
+  // In case the auth state change event was missed, check the session directly.
   void supabase.auth.getSession().then(async ({ data, error }) => {
     if (error) {
       errorMessage.value = error.message

@@ -17,6 +17,7 @@ const redirectIfAuthenticated = async () => {
   }
 }
 
+// Check the user's authentication status as soon as the page is mounted.
 onMounted(() => {
   void redirectIfAuthenticated()
 
@@ -28,6 +29,7 @@ onMounted(() => {
   })
 })
 
+// Start the GitHub OAuth flow when the user clicks the sign-in button.
 const signInWithGitHub = async () => {
   if (isLoading.value) {
     return

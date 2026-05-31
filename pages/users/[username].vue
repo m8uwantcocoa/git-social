@@ -3,6 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
+// Defines the types for the GitHub profile and repositories data that will be fetched from the backend API.
 type GitHubProfile = {
   avatar_url: string
   bio?: string | null
@@ -31,9 +32,11 @@ type GitHubProfileData = {
   repos: GitHubRepo[]
 }
 
+// Get the username from the route parameters to fetch the corresponding GitHub profile and repositories.
 const route = useRoute()
 const username = computed(() => String(route.params.username || ''))
 
+// Fetch the GitHub profile and repositories data from the backend API, which in turn fetches it from GitHub using the stored provider token.
 const { data: githubData, pending, refresh, error } = await useAsyncData(
   () => `github-user-profile-${username.value}`,
   () => $fetch<GitHubProfileData>(`/api/github/users/${username.value}`),
@@ -42,7 +45,7 @@ const { data: githubData, pending, refresh, error } = await useAsyncData(
     default: () => ({ profile: null, repos: [] })
   }
 )
-
+// Local state for handling the refresh action and toggling the display of repositories.
 const refreshing = ref(false)
 const showAllRepos = ref(false)
 
@@ -327,6 +330,7 @@ const refreshProfile = async () => {
   </div>
 </template>
 
+// Scroll bar styles for more repos grid when expanded
 <style scoped>
 .repo-scroll-grid {
   scrollbar-gutter: stable;

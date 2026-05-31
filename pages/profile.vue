@@ -2,7 +2,7 @@
 definePageMeta({
   middleware: 'auth'
 })
-
+// Defines TypeScript types for the GitHub profile and repositories data.
 type GitHubProfile = {
   avatar_url: string
   bio?: string | null
@@ -33,6 +33,7 @@ type GitHubProfileData = {
 
 const supabase = useSupabaseClient()
 
+// Fetch the GitHub profile and repositories data from the backend API, which in turn fetches it from GitHub using the stored provider token.
 const { data: githubData, pending, refresh } = await useAsyncData('github-profile', async () => {
   const { data: { session } } = await supabase.auth.getSession()
 
@@ -45,6 +46,7 @@ const { data: githubData, pending, refresh } = await useAsyncData('github-profil
     })
   }
 
+  // Include the access token in the request to fetch the user's GitHub profile and repositories.
   const headers: HeadersInit = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}
 
   return await $fetch<GitHubProfileData>('/api/github/me', { headers })
@@ -52,6 +54,7 @@ const { data: githubData, pending, refresh } = await useAsyncData('github-profil
   default: () => ({ profile: null, repos: [] })
 })
 
+// Local state for handling the refresh action and toggling the display of repositories.
 const refreshing = ref(false)
 const showAllRepos = ref(false)
 
@@ -342,6 +345,7 @@ const refreshProfile = async () => {
   </div>
 </template>
 
+// Scrollbar styles for more repos grid when expanded
 <style scoped>
 .repo-scroll-grid {
   scrollbar-gutter: stable;
