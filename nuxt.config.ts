@@ -19,6 +19,6 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    githubToken: process.env.GITHUB_TOKEN, // Hämtar från .env
+    githubToken: process.env.GITHUB_TOKEN, // Fetches from .env
   }
 })

@@ -22,7 +22,7 @@ onMounted(() => {
   void redirectIfAuthenticated()
 
   supabase.auth.onAuthStateChange((event, session) => {
-    // Go to the app as soon as Supabase finishes the sign-in process.
+    // Go to the app directly as the Supabase finishes the sign-in process.
     if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
       void navigateTo('/', { replace: true })
     }

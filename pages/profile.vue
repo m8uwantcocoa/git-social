@@ -33,7 +33,7 @@ type GitHubProfileData = {
 
 const supabase = useSupabaseClient()
 
-// Fetch the GitHub profile and repositories data from the backend API, which in turn fetches it from GitHub using the stored provider token.
+// Fetch the GitHub profile and repositories data from the backend API, which also fetches it from GitHub using the stored provider token.
 const { data: githubData, pending, refresh } = await useAsyncData('github-profile', async () => {
   const { data: { session } } = await supabase.auth.getSession()
 
@@ -345,7 +345,7 @@ const refreshProfile = async () => {
   </div>
 </template>
 
-// Scrollbar styles for more repos grid when expanded
+// Scrollbar styles for more repos grid when expanded.
 <style scoped>
 .repo-scroll-grid {
   scrollbar-gutter: stable;

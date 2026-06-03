@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event).catch(() => ({}))
   let usernamesToSync = body?.usernames || []
 
+  // If there are no usernames provided, syncs the events for every stored profile.
   if (!usernamesToSync || usernamesToSync.length === 0) {
     const { data: profiles, error: profileError } = await supabase
       .from('profiles')
@@ -30,6 +31,8 @@ export default defineEventHandler(async (event) => {
       const headers: Record<string, string> = {
         'Accept': 'application/vnd.github+json'
       }
+
+      // Adds the server GitHub token when accesible to avoid low undautheticated rate limits.
       if (process.env.GITHUB_TOKEN) {
         headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
       }
@@ -39,6 +42,7 @@ export default defineEventHandler(async (event) => {
       })
 
       const eventsToSave = githubEvents.map(e => {
+        // Stores the readable summary for event types that should appear in the feed.
         let extractedMessage = null
 
         if (e.type === 'PushEvent') {
@@ -67,6 +71,7 @@ export default defineEventHandler(async (event) => {
         }
       })
 
+      // Uses the GitHub's event id as the conflict key so that it won't create duplicates when syncing multiple times.
       if (eventsToSave.length > 0) {
         const { error: upsertError } = await supabase.from('events').upsert(eventsToSave, { onConflict: 'github_event_id' })
         if (upsertError) {
@@ -78,6 +83,7 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  // Syncs users in parallel because each GitHub request is independent.
   await Promise.all(syncPromises)
   return { success: true }
 })

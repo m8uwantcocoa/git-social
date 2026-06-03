@@ -6,7 +6,7 @@ export default defineNuxtPlugin(() => {
     const { data } = await supabase.auth.getSession()
 
     try {
-      // Store the GitHub OAuth token server-side so API routes can call GitHub on behalf of the user.
+      // Stores the GitHub OAuth token server-side so API routes can call GitHub on behalf of the user.
       await $fetch('/api/github/session', {
         method: 'POST',
         body: {

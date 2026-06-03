@@ -1,5 +1,5 @@
 // This page handles the callback from GitHub after the user has authenticated.
-// It listens for changes in the authentication state and redirects the user to the app once they are signed in.
+// It listens for changes in the authentication state and redirects the user to the app after they signed in.
 // It also syncs the GitHub token and profile information with the backend before redirecting.
 <script setup lang="ts">
 import type { Session } from '@supabase/supabase-js'
@@ -65,7 +65,7 @@ onMounted(() => {
     }
   })
 
-  // In case the auth state change event was missed, check the session directly.
+  // Check the current session in case the user is already signed in when this page loads.
   void supabase.auth.getSession().then(async ({ data, error }) => {
     if (error) {
       errorMessage.value = error.message

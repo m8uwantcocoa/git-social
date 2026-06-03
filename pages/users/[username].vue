@@ -32,11 +32,11 @@ type GitHubProfileData = {
   repos: GitHubRepo[]
 }
 
-// Get the username from the route parameters to fetch the corresponding GitHub profile and repositories.
+// Gets the username from the route parameters to fetch the corresponding GitHub profile and repositories.
 const route = useRoute()
 const username = computed(() => String(route.params.username || ''))
 
-// Fetch the GitHub profile and repositories data from the backend API, which in turn fetches it from GitHub using the stored provider token.
+// Fetches the GitHub profile and repositories data from the backend API, which also fetches it from GitHub using the stored provider token.
 const { data: githubData, pending, refresh, error } = await useAsyncData(
   () => `github-user-profile-${username.value}`,
   () => $fetch<GitHubProfileData>(`/api/github/users/${username.value}`),

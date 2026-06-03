@@ -9,17 +9,20 @@ const { username: currentUsername } = useGitHubIdentity()
 const activeTab = ref('global')
 const showConfetti = ref(false)
 
+// Shows a confetti celebration animation when the user first arrives at the app after signing in.
 onMounted(() => {
   if (localStorage.getItem('show_welcome_confetti')) {
     showConfetti.value = true
     localStorage.removeItem('show_welcome_confetti')
   }
 
+  // Uses the cached feed data first from localStorage for a faster initial laod, then fetches the latest feed from the server in the background.
   const cached = localStorage.getItem('feed_cache')
   if (cached && (!posts.value || posts.value.length === 0)) {
     try { posts.value = JSON.parse(cached) } catch {}
   }
 
+  // Reloads the feed when another component updates the followed users list.
   window.addEventListener('following-updated', reloadFeed)
   reloadFeed()
 })
@@ -31,6 +34,7 @@ onUnmounted(() => {
 const { data: posts, refresh } = await useAsyncData('posts', async () => {
   if (!currentUser.value) return []
 
+  // Builds a list of Github username to better track the users shown in the feed.
   let usernamesToTrack = []
 
   if (import.meta.client) {
@@ -62,6 +66,7 @@ const { data: posts, refresh } = await useAsyncData('posts', async () => {
   return feedEvents || []
 })
 
+// Here is the fixed posts stored in local state updated whenever the posts data changes, so the latest feed is always cached in localStorage for faster loading next time.
 if (import.meta.client) {
   watch(posts, (newVal) => {
     if (newVal && newVal.length > 0) {
@@ -82,6 +87,7 @@ const reloadFeed = async () => {
       usernames.push(currentUsername.value)
     }
 
+    // Asks the server to sync Github events before refreshing the supabase feed query.
     try {
       await $fetch('/api/github/sync-events', { method: 'POST', body: { usernames } })
     } catch (e) {}
