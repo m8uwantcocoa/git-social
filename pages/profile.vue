@@ -98,7 +98,7 @@ const refreshProfile = async () => {
                 </h1>
 
                 <p class="mt-3 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-                  View your connected GitHub account, profile stats and repositories separately from the feed.
+                  View your connected GitHub account, profile stats and repositories.
                 </p>
               </div>
 
@@ -215,7 +215,7 @@ const refreshProfile = async () => {
                     Open on GitHub
                   </p>
                   <p class="mt-2 text-sm leading-6 text-emerald-700">
-                    Jump to the full GitHub profile in a new tab.
+                    Check out the full GitHub profile in a new tab.
                   </p>
                 </a>
               </aside>

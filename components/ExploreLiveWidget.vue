@@ -146,6 +146,7 @@ const toggleFollow = async (targetUsername: string) => {
 onMounted(() => {
   initLocalWeather()
   fetchMyFollows()
+  window.addEventListener('following-updated', fetchMyFollows)
 
   const updateTime = () => {
     const now = new Date()
@@ -156,7 +157,11 @@ onMounted(() => {
   timer = setInterval(updateTime, 60000)
 })
 
-onUnmounted(() => clearInterval(timer))
+onUnmounted(() => {
+  clearInterval(timer)
+  clearTimeout(searchTimeout)
+  window.removeEventListener('following-updated', fetchMyFollows)
+})
 
 const latestActivity = ref<any[]>([])
 

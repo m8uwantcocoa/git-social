@@ -200,7 +200,7 @@ const refreshProfile = async () => {
                     Open on GitHub
                   </p>
                   <p class="mt-2 text-sm leading-6 text-emerald-700">
-                    Jump to the full GitHub profile in a new tab.
+                    Check out the full GitHub profile in a new tab.
                   </p>
                 </a>
               </aside>
