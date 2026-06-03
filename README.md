@@ -5,6 +5,13 @@
 ## About the Project
 Git-Social turns standard GitHub activity into an interactive social media feed. When you push code, open a pull request, or star a repository, it automatically shows up on your followers' feeds. Users can like, comment, and engage with real development work in real-time.
 
+## Comparision between Angular, React and Vue, and why we chose Vue.
+According to GeeksforGeeks ([source](https://www.geeksforgeeks.org/blogs/vue-vs-angular/)), Vue suits smaller teams
+which our was, we were a team of three persons developing this project. GeeksforGeeks also notes that Vue is straightforward and easy to pick up and learn if you know web-dev, which suited our team because of the time pressure we had. This is why Vue was chosen over Angular.
+
+According to Strap.io ([source](https://strapi.io/blog/vue-vs-react)), React suits larger applications, which is also why we chose to tackle Vue.js instead of React.js. We knew that the ecosystem was smaller for Vue, but since we were not building something very complex or a production app, Vue fit our needs much better. 
+
+
 **Key Features:**
 - **GitHub Activity Feed:** Automatically syncs GitHub events (pushes, PRs, issues) to a social timeline.
 - **Social Features:** Follow other developers, like events, and comment on them.
