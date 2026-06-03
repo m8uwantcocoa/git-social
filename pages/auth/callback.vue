@@ -1,11 +1,13 @@
 // This page handles the callback from GitHub after the user has authenticated.
-// It listens for changes in the authentication state and redirects the user to the app once they are signed in. 
+// It listens for changes in the authentication state and redirects the user to the app once they are signed in.
 // It also syncs the GitHub token and profile information with the backend before redirecting.
 <script setup lang="ts">
+import type { Session } from '@supabase/supabase-js'
+
 const supabase = useSupabaseClient()
 const status = ref('Finishing sign-in...')
 const errorMessage = ref('')
-let hasSynced = false
+let syncPromise: Promise<boolean> | null = null
 
 // Redirect the user to the app after successful sign-in.
 const redirectToApp = () => {
@@ -14,43 +16,52 @@ const redirectToApp = () => {
 }
 
 // Sync the GitHub token and profile information with the backend.
-const syncGitHubToken = async (session: any) => {
-  if (hasSynced) return
-  hasSynced = true
+const syncGitHubToken = (session: Session): Promise<boolean> => {
+  if (syncPromise) return syncPromise
 
-  try {
-    const providerToken = session?.provider_token
-    const accessToken = session?.access_token
+  syncPromise = (async () => {
+    try {
+      const providerToken = session.provider_token
+      const accessToken = session.access_token
 
-    // Save the GitHub provider token in the backend to use for authenticated API requests.
-    await $fetch('/api/github/session', {
-      method: 'POST',
-      body: { providerToken: providerToken || null }
-    })
-    
-    await new Promise(resolve => setTimeout(resolve, 800))
+      if (!providerToken || !accessToken) {
+        throw new Error('GitHub provider token was not returned by Supabase.')
+      }
 
-    // Sync the user's profile information
-    if (accessToken) {
+      // Save the GitHub provider token in the backend to use for authenticated API requests.
+      await $fetch('/api/github/session', {
+        method: 'POST',
+        body: { providerToken }
+      })
+
+      // Sync the user's profile information.
       await $fetch('/api/github/me', {
         headers: {
-          Authorization: `Bearer ${accessToken}` 
+          Authorization: `Bearer ${accessToken}`
         }
       })
+
+      return true
+    } catch (error) {
+      console.error('Failed to store session or sync profile', error)
+      status.value = 'Sign-in could not be completed.'
+      errorMessage.value = error instanceof Error
+        ? error.message
+        : 'Could not sync your GitHub profile. Please try signing in again.'
+      return false
     }
-    
-  } catch (error) {
-    console.error('Failed to store session or sync profile', error)
-  }
+  })()
+
+  return syncPromise
 }
 
 // Listen for changes in the authentication state and handle the sign-in process.
 onMounted(() => {
   const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
     if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
-      await syncGitHubToken(session) 
       authListener.data.subscription.unsubscribe()
-      redirectToApp()
+      const didSync = await syncGitHubToken(session)
+      if (didSync) redirectToApp()
     }
   })
 
@@ -64,9 +75,9 @@ onMounted(() => {
     }
 
     if (data.session?.user) {
-      await syncGitHubToken(data.session) 
       authListener.data.subscription.unsubscribe()
-      redirectToApp()
+      const didSync = await syncGitHubToken(data.session)
+      if (didSync) redirectToApp()
       return
     }
 
