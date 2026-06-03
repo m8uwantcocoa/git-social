@@ -1,6 +1,47 @@
 interface GitHubUserProfileData {
-  profile: any | null
-  repos: any[]
+  profile: GitHubUserProfile | null
+  repos: GitHubRepo[]
+}
+
+interface GitHubUserProfile {
+  login: string
+  name: string | null
+  avatar_url: string
+  bio: string | null
+  followers: number
+  following: number
+  html_url: string
+  public_repos: number
+}
+
+interface GitHubRepo {
+  id: number
+  name: string
+  full_name: string
+  html_url: string
+  description: string | null
+  private: boolean
+  default_branch?: string
+  language?: string | null
+  stargazers_count?: number
+  updated_at?: string
+}
+
+const getErrorStatus = (error: unknown) => {
+  if (typeof error === 'object' && error !== null) {
+    const response = 'response' in error ? error.response : undefined
+
+    if (
+      typeof response === 'object'
+      && response !== null
+      && 'status' in response
+      && typeof response.status === 'number'
+    ) {
+      return response.status
+    }
+  }
+
+  return 500
 }
 
 // This API route fetches a GitHub user's profile and repos using a provider token from cookies or environment variables.
@@ -29,13 +70,22 @@ export default defineEventHandler(async (event): Promise<GitHubUserProfileData> 
     })
   }
 
-  // If no provider token is available, we cannot authenticate with the GitHub API, so we return null data instead of throwing an error.
+  if (!/^[a-zA-Z0-9-]{1,39}$/.test(username)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid GitHub username'
+    })
+  }
+
+  const encodedUsername = encodeURIComponent(username)
+
+  // If no provider token is available, we can still use GitHub's public API with lower rate limits.
   try {
     const [profile, repos] = await Promise.all([
-      $fetch<any>(`https://api.github.com/users/${username}`, {
+      $fetch<GitHubUserProfile>(`https://api.github.com/users/${encodedUsername}`, {
         headers: githubApiHeaders(providerToken)
       }),
-      $fetch<any[]>(`https://api.github.com/users/${username}/repos`, {
+      $fetch<GitHubRepo[]>(`https://api.github.com/users/${encodedUsername}/repos`, {
         headers: githubApiHeaders(providerToken),
         query: {
           sort: 'updated',
@@ -48,11 +98,9 @@ export default defineEventHandler(async (event): Promise<GitHubUserProfileData> 
       profile,
       repos
     }
-  } catch (error: any) {
-    const statusCode = error?.response?.status || 500
-
+  } catch (error: unknown) {
     throw createError({
-      statusCode,
+      statusCode: getErrorStatus(error),
       statusMessage: 'Failed to fetch GitHub user data'
     })
   }
