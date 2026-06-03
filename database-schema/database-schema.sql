@@ -1,6 +1,4 @@
--- SQL schema for Git Social application
-
-
+-- SQL schema for the Git Social application.
 
 -- 1. Create table: profiles
 CREATE TABLE public.profiles (
@@ -32,7 +30,7 @@ CREATE TABLE public.events (
     message TEXT,
     avatar_url TEXT,
     github_event_id TEXT UNIQUE,
-    payload JSONB -- Använder JSONB eftersom din payload innehåller JSON-data
+    payload JSONB
 );
 
 -- 4. Create table: event_likes
@@ -41,7 +39,7 @@ CREATE TABLE public.event_likes (
     event_id UUID NOT NULL REFERENCES public.events(id) ON DELETE CASCADE,
     github_username TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-    UNIQUE(event_id, github_username) -- En användare kan bara gilla samma event en gång
+    UNIQUE(event_id, github_username)
 );
 
 -- 5. Create table: comments
@@ -53,16 +51,107 @@ CREATE TABLE public.comments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- If you want to enable Row Level Security (RLS) for better security, you can do so with the following commands. This will allow you to define policies later to control who can access or modify the data.
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.event_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 
--- Default policies for testing. In production, you should replace these with proper authentication and authorization policies.
-CREATE POLICY "Allow public read access on profiles" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public read access on follows" ON public.follows FOR SELECT USING (true);
-CREATE POLICY "Allow public read access on events" ON public.events FOR SELECT USING (true);
-CREATE POLICY "Allow public read access on event_likes" ON public.event_likes FOR SELECT USING (true);
-CREATE POLICY "Allow public read access on comments" ON public.comments FOR SELECT USING (true);
+-- Row Level Security policies define who can read or modify each table.
+-- Public data shown in the feed, search, and profile pages.
+CREATE POLICY "Profiles are readable by everyone"
+ON public.profiles FOR SELECT
+USING (true);
+
+CREATE POLICY "Events are readable by everyone"
+ON public.events FOR SELECT
+USING (true);
+
+CREATE POLICY "Likes are readable by everyone"
+ON public.event_likes FOR SELECT
+USING (true);
+
+CREATE POLICY "Comments are readable by everyone"
+ON public.comments FOR SELECT
+USING (true);
+
+CREATE POLICY "Follows are readable by everyone"
+ON public.follows FOR SELECT
+USING (true);
+
+-- Users may create and update their own profile row after GitHub sign-in.
+CREATE POLICY "Users can insert their own profile"
+ON public.profiles FOR INSERT
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+ON public.profiles FOR UPDATE
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+-- The current app stores follows in localStorage, but these policies keep the
+-- table ready for authenticated database-backed follows.
+CREATE POLICY "Users can follow from their own profile"
+ON public.follows FOR INSERT
+WITH CHECK (auth.uid() = follower_id);
+
+CREATE POLICY "Users can unfollow from their own profile"
+ON public.follows FOR DELETE
+USING (auth.uid() = follower_id);
+
+-- GitHub events are synchronized by signed-in users or trusted server routes.
+CREATE POLICY "Authenticated users can insert events"
+ON public.events FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Authenticated users can update events"
+ON public.events FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+-- Likes and comments must be written as the signed-in user's GitHub username.
+CREATE POLICY "Users can like as themselves"
+ON public.event_likes FOR INSERT
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM public.profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.github_username = event_likes.github_username
+    )
+);
+
+CREATE POLICY "Users can remove their own likes"
+ON public.event_likes FOR DELETE
+USING (
+    EXISTS (
+        SELECT 1
+        FROM public.profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.github_username = event_likes.github_username
+    )
+);
+
+CREATE POLICY "Users can comment as themselves"
+ON public.comments FOR INSERT
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM public.profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.github_username = comments.github_username
+    )
+);
+
+CREATE POLICY "Users can delete their own comments"
+ON public.comments FOR DELETE
+USING (
+    EXISTS (
+        SELECT 1
+        FROM public.profiles
+        WHERE profiles.id = auth.uid()
+          AND profiles.github_username = comments.github_username
+    )
+);
