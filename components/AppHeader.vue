@@ -1,4 +1,6 @@
 <script setup>
+
+// Component for the top fixed header with app title, refresh button, and profile link
 const emit = defineEmits(['update:activeTab', 'refresh'])
 
 defineProps({

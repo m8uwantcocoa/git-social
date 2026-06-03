@@ -14,6 +14,7 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const { username: currentUsername } = useGitHubIdentity()
 
+// Uses local state so like/comments update immediately whitout reloading the whole feed.
 const localLikes = ref(props.post.event_likes || [])
 const localComments = ref(props.post.comments || [])
 
@@ -30,10 +31,12 @@ const latestComment = computed(() => {
   return localComments.value[localComments.value.length - 1]
 })
 
+// Falls back to a readable message when the stored event has no custom message.
 const generatedMessage = computed(() => {
   const type = props.post.event_type
   let payload = props.post.payload
 
+  // Github payloads can arrive as JSON strings from the database, so this parses them before reading the event details.
   if (typeof payload === 'string') {
     try { payload = JSON.parse(payload) } catch {}
   }
@@ -130,6 +133,7 @@ const submitComment = async () => {
     .select()
 
   if (!error && data) {
+    // Adds the new comment to the local state so it appears immediately without reloading the feed.
     localComments.value.push(data[0])
     newCommentText.value = ''
 

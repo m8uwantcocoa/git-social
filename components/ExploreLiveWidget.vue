@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+
+// Component for the right sidebar, showing local weather, time, and a search box for finding other users to follow
 import { ref, onMounted, onUnmounted } from 'vue'
 
 type WeatherResponse = {
@@ -22,6 +24,7 @@ const locationData = ref({
   temp: '--'
 })
 
+// Fetches weather data from the API, with caching to avoid excessive calls
 const fetchWeatherFromApi = async (lat: number, lon: number) => {
   try {
     const cacheKey = `weather_${lat.toFixed(2)}_${lon.toFixed(2)}`
@@ -63,6 +66,7 @@ const initLocalWeather = () => {
     return
   }
 
+  // Tries to get the user's location and fetch weather data, with a timeout in case of denial or failure
   navigator.geolocation.getCurrentPosition(
     (position) => {
       fetchWeatherFromApi(position.coords.latitude, position.coords.longitude)
@@ -85,6 +89,7 @@ const isSearching = ref(false)
 const followingSet = ref<Set<string>>(new Set()) 
 let searchTimeout: any
 
+// Loads the followed users from localStorage because the followers are client-side not in the database.
 const fetchMyFollows = async () => {
   if (!currentUser.value) return
   if (import.meta.client) {
@@ -96,6 +101,7 @@ const fetchMyFollows = async () => {
   await fetchLatestActivity()
 }
 
+// Handles the search input, debouncing the API call to avoid excessive requests while typing
 const handleSearch = () => {
   clearTimeout(searchTimeout)
   
@@ -129,6 +135,7 @@ const toggleFollow = async (targetUsername: string) => {
     followingSet.value.add(targetUsername)
   }
 
+  // Updates the localStorage and triggers a global event so that the feed can react to changes in the followed users list
   if (import.meta.client) {
     localStorage.setItem('git_social_following', JSON.stringify(Array.from(followingSet.value)))
     window.dispatchEvent(new Event('following-updated'))
@@ -153,6 +160,7 @@ onUnmounted(() => clearInterval(timer))
 
 const latestActivity = ref<any[]>([])
 
+// Converts the raw Github event types into short text used by the latest-activity widget.
 const getEventDescription = (event: any) => {
   const type = event.event_type
   const payload = event.payload || {}
@@ -187,6 +195,7 @@ const formatTimeAgo = (dateString: string) => {
   return `${Math.floor(hours / 24)}d`
 }
 
+// Fetches the recent events only for followed users and show the newest activity first.
 const fetchLatestActivity = async () => {
   if (!currentUser.value) return
   const usernamesToTrack = Array.from(followingSet.value)

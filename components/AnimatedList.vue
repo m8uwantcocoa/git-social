@@ -11,6 +11,7 @@ const props = defineProps<Props>();
 
 const slots = useSlots();
 
+// Filters out comment nodes, fragments, and flattens nested arrays of nodes.
 const flattenNodes = (nodes: VNodeArrayChildren): VNode[] => {
   return nodes.flatMap((node) => {
     if (!node || typeof node === "string" || typeof node === "number" || typeof node === "boolean") {

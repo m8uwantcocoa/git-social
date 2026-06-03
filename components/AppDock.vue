@@ -1,4 +1,6 @@
 <script setup>
+
+// Component for the bottom navigation dock on mobile devices
 const route = useRoute()
 const supabase = useSupabaseClient()
 const isSearchOpen = useState('git-social-search-open', () => false)
