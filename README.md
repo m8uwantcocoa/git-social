@@ -11,6 +11,7 @@ which our was, we were a team of three persons developing this project. Geeksfor
 
 According to Strap.io ([source](https://strapi.io/blog/vue-vs-react)), React suits larger applications, which is also why we chose to tackle Vue.js instead of React.js. We knew that the ecosystem was smaller for Vue, but since we were not building something very complex or a production app, Vue fit our needs much better. 
 
+## Features & Stack
 
 **Key Features:**
 - **GitHub Activity Feed:** Automatically syncs GitHub events (pushes, PRs, issues) to a social timeline.
@@ -33,12 +34,11 @@ Follow these instructions to get a local copy up and running. Perfect for teache
 ### Prerequisites
 - **Node.js** (v18 or newer recommended)
 - **npm**, **yarn**, or **pnpm**
-- A **Supabase** account (the free tier works perfectly)
+- A **Supabase** account (the free tier works perfectly), teachers can skip this part. 
 - A **GitHub** account
 
-### TEACHERS
+### Teachers and examinators
 - Skip step 1, you should have a .env file sent with everything set up for you.
-
 
 ### 1. Supabase Setup
 1. Create a new project on [Supabase](https://database.new).
@@ -50,7 +50,7 @@ Follow these instructions to get a local copy up and running. Perfect for teache
 
 ### 2. Clone and Install
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/m8uwantcocoa/git-social.git
 cd git-social
 npm install
 ```
