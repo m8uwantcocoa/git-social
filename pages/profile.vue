@@ -82,8 +82,8 @@ const refreshProfile = async () => {
     <AppHeader active-tab="global" @refresh="refreshProfile" />
     <AppSidebar class="hidden lg:block" />
 
-    <main class="w-full px-3 pb-28 pt-4 sm:px-5 sm:pt-5 lg:ml-72 lg:w-[calc(100%-18rem)] lg:max-w-none lg:px-6 lg:pb-12 xl:mx-auto xl:w-full xl:max-w-4xl">
-      <section class="max-w-full overflow-hidden rounded-3xl border border-slate-200/60 bg-slate-50/80 shadow-sm backdrop-blur-sm sm:rounded-[2rem]">
+    <main class="w-full px-3 pb-28 pt-4 sm:px-5 sm:pt-5 lg:ml-[245px] lg:w-[calc(100%-245px)] lg:px-10 lg:pb-12 xl:px-16">
+      <section class="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200/60 bg-slate-50/80 shadow-sm backdrop-blur-sm sm:rounded-[2rem]">
         <div class="relative min-w-0">
           <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-emerald-500/5 blur-3xl" />
           <div class="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-lime-400/5 blur-3xl" />
