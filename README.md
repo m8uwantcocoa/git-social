@@ -1,6 +1,8 @@
 # Git-Social 🧑‍💻🕸️
 
-*The platform for anti-social coders to meet up and discuss their projects, commits, merges and more! Join Git-Social and start networking... not with pesky recruiters, but with actual coders! LinkedIn could never.*
+*The platform for anti-social coders to meet up and discuss their projects, commits, merges and more! Join Git-Social and start networking... not with pesky recruiters, but with actual coders! LinkedIn could never.* 
+
+Click ([here](https://git-social-pi.vercel.app/)) to try Git-Social!
 
 ## About the Project
 Git-Social turns standard GitHub activity into an interactive social media feed. When you push code, open a pull request, or star a repository, it automatically shows up on your followers' feeds. Users can like, comment, and engage with real development work in real-time.
