@@ -60,8 +60,8 @@ Create a `.env` file in the root of your project and add the following variables
 
 ```env
 # Supabase Configuration
-NUXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NUXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_key
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
 
 # GitHub Setup
 # Create a Personal Access Token (classic) on GitHub with 'repo' and 'user' scopes
